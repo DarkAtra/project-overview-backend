@@ -1,0 +1,17 @@
+spring:
+  main:
+    banner-mode: off
+
+services:
+  repository:
+    project: ~
+    excluded-repositories: []
+
+clients:
+  bit-bucket:
+    url: ~
+    token: ~
+
+feign:
+  okhttp:
+    enabled: true
