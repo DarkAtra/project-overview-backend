@@ -6,6 +6,7 @@ import de.idealo.projectoverviewhackday.clients.model.RepositoryEntity
 import feign.Headers
 import feign.Param
 import feign.RequestLine
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.MediaType
 import java.util.Optional
 
@@ -13,12 +14,14 @@ interface BitBucketClient {
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos?limit=9999")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
+	@Cacheable("bitbucket_repositories")
 	fun getRepositories(
 		@Param("projectKey") project: String
 	): PageableEntity<RepositoryEntity>
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw/pom.xml")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
+	@Cacheable("bitbucket_pom")
 	fun getPom(
 		@Param("projectKey") project: String,
 		@Param("repositorySlug") repository: String
@@ -26,6 +29,7 @@ interface BitBucketClient {
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw/scm/openshift/{openShiftPropertyTarget}.properties")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
+	@Cacheable("bitbucket_openshift_properties")
 	fun getOpenshiftProperties(
 		@Param("projectKey") project: String,
 		@Param("repositorySlug") repository: String,

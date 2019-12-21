@@ -4,8 +4,6 @@ import de.idealo.projectoverviewhackday.model.CheckOutcome
 import de.idealo.projectoverviewhackday.model.CheckStatus
 import de.idealo.projectoverviewhackday.model.Repository
 import de.idealo.projectoverviewhackday.service.RepositoryService
-import org.springframework.cache.annotation.CachePut
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -20,15 +18,18 @@ import org.springframework.web.bind.annotation.RestController
 class RepositoryController(private val repositoryService: RepositoryService) {
 
 	@GetMapping
-	@Cacheable("repositories", key = "#checkOutcome + '_' + #checkStatus")
 	fun getRepositories(@RequestParam(required = false) checkOutcome: CheckOutcome? = null,
 						@RequestParam(required = false) checkStatus: CheckStatus? = null): List<Repository> {
 		return repositoryService.getRepositories(checkOutcome, checkStatus)
 	}
 
 	@Scheduled(fixedDelay = 30000)
-	@CachePut("repositories", key = "'null_null'")
-	fun refreshCache(): List<Repository> {
-		return repositoryService.getRepositories(null, null)
+	fun refreshCache() {
+		repositoryService.evictBitbucketCache()
+		arrayOf(*CheckOutcome.values(), null).forEach { checkOutcome ->
+			arrayOf(*CheckStatus.values(), null).forEach { checkStatus ->
+				repositoryService.reloadCache(checkOutcome, checkStatus)
+			}
+		}
 	}
 }

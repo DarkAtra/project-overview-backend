@@ -10,6 +10,9 @@ import de.idealo.projectoverviewhackday.model.Property
 import de.idealo.projectoverviewhackday.model.Repository
 import de.idealo.projectoverviewhackday.model.merge
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,8 +24,17 @@ class RepositoryService(
 	private val openShiftPropertyParser: OpenShiftPropertyParser
 ) {
 
-	fun getRepositories(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> {
+	@CacheEvict("bitbucket_repositories", "bitbucket_pom", "bitbucket_openshift_properties", allEntries = true)
+	fun evictBitbucketCache() {
+	}
 
+	@CachePut("repositories")
+	fun reloadCache(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> = getRepositoriesInternal(checkOutcome, checkStatus)
+
+	@Cacheable("repositories")
+	fun getRepositories(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> = getRepositoriesInternal(checkOutcome, checkStatus)
+
+	private fun getRepositoriesInternal(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> {
 		return bitBucketClient.getRepositories(repositoryServiceProperties.project!!).values
 			.map { repositoryEntity ->
 				Repository.Builder(repositoryEntity.name, repositoryEntity.project.key)
