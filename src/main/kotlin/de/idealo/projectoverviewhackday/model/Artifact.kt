@@ -25,4 +25,13 @@ data class Artifact(
 			)
 		}
 	}
+
+	fun compare(other: Artifact?): CheckOutcome {
+		return when {
+			other == null -> CheckOutcome.NOT_FOUND
+			version == null -> CheckOutcome.UNKNOWN
+			groupId == other.groupId && artifactId == other.artifactId -> version.compare(other.version)
+			else -> CheckOutcome.NOT_FOUND
+		}
+	}
 }

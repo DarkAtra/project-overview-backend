@@ -4,5 +4,7 @@ data class CheckResult<T>(
 	val check: Check<T>,
 	val found: T?,
 	val expected: T,
-	val required: Boolean
+	val required: Boolean,
+	val checkOutcome: CheckOutcome,
+	val checkStatus: CheckStatus
 )

@@ -1,5 +1,7 @@
 package de.idealo.projectoverviewhackday.api
 
+import de.idealo.projectoverviewhackday.model.CheckOutcome
+import de.idealo.projectoverviewhackday.model.CheckStatus
 import de.idealo.projectoverviewhackday.model.Repository
 import de.idealo.projectoverviewhackday.service.RepositoryService
 import org.springframework.cache.annotation.CachePut
@@ -9,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -17,14 +20,15 @@ import org.springframework.web.bind.annotation.RestController
 class RepositoryController(private val repositoryService: RepositoryService) {
 
 	@GetMapping
-	@Cacheable("repositories")
-	fun getRepositories(): List<Repository> {
-		return repositoryService.getRepositories()
+	@Cacheable("repositories", key = "#checkOutcome + '_' + #checkStatus")
+	fun getRepositories(@RequestParam(required = false) checkOutcome: CheckOutcome? = null,
+						@RequestParam(required = false) checkStatus: CheckStatus? = null): List<Repository> {
+		return repositoryService.getRepositories(checkOutcome, checkStatus)
 	}
 
 	@Scheduled(fixedDelay = 30000)
 	@CachePut("repositories")
 	fun refreshCache(): List<Repository> {
-		return repositoryService.getRepositories()
+		return repositoryService.getRepositories(null, null)
 	}
 }

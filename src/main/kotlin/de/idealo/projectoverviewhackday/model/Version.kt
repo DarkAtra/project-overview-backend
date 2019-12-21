@@ -5,13 +5,12 @@ data class Version(
 	val minor: Long,
 	val build: Long
 ) {
-	fun getVersionDifference(other: Version?): Version? {
-		return if (other != null) Version(
-			major = this.major - other.major,
-			minor = this.minor - other.minor,
-			build = this.build - other.build
-		) else {
-			null
+	fun compare(other: Version?): CheckOutcome {
+		return when {
+			other == null -> CheckOutcome.NOT_FOUND
+			major - other.major > 1 -> CheckOutcome.VERY_OUTDATED
+			major - other.major > 0 || minor - other.minor > 0 || build - other.build > 0 -> CheckOutcome.OUTDATED
+			else -> CheckOutcome.UP_TO_DATE
 		}
 	}
 

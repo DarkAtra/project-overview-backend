@@ -4,6 +4,8 @@ import de.idealo.projectoverviewhackday.clients.BitBucketClient
 import de.idealo.projectoverviewhackday.clients.model.OpenShiftPropertyTarget
 import de.idealo.projectoverviewhackday.clients.model.RepositoryEntity
 import de.idealo.projectoverviewhackday.model.Check
+import de.idealo.projectoverviewhackday.model.CheckOutcome
+import de.idealo.projectoverviewhackday.model.CheckStatus
 import de.idealo.projectoverviewhackday.model.Property
 import de.idealo.projectoverviewhackday.model.Repository
 import de.idealo.projectoverviewhackday.model.merge
@@ -19,7 +21,8 @@ class RepositoryService(
 	private val openShiftPropertyParser: OpenShiftPropertyParser
 ) {
 
-	fun getRepositories(): List<Repository> {
+	fun getRepositories(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> {
+
 		return bitBucketClient.getRepositories(repositoryServiceProperties.project!!).values
 			.map { repositoryEntity ->
 				Repository.Builder(repositoryEntity.name, repositoryEntity.project.key)
@@ -30,7 +33,7 @@ class RepositoryService(
 						.merge(getOpenShiftProperties(repositoryEntity, OpenShiftPropertyTarget.PRODUCTION)))
 			}
 			.map(Repository.Builder::build)
-			.onEach(this::performChecks)
+			.onEach { performChecks(it, checkOutcome, checkStatus) }
 			.filter { it.checkResults.isNotEmpty() }
 	}
 
@@ -40,8 +43,12 @@ class RepositoryService(
 			.orElse(emptyList())
 	}
 
-	private fun performChecks(repository: Repository) {
-		getChecks(repository).map { it.check(repository) }.forEach { repository.checkResults.add(it) }
+	private fun performChecks(repository: Repository, checkOutcome: CheckOutcome?, checkStatus: CheckStatus?) {
+		getChecks(repository)
+			.map { it.check(repository) }
+			.filter { checkOutcome == null || it.checkOutcome == checkOutcome }
+			.filter { checkStatus == null || it.checkStatus == checkStatus }
+			.forEach { repository.checkResults.add(it) }
 	}
 
 	private fun getChecks(repository: Repository): List<Check<out Any>> {

@@ -9,11 +9,26 @@ class OpenshiftPropertyCheck(
 
 	override fun check(repository: Repository): CheckResult<Property> {
 
+		val foundProperty = repository.openShiftProperties.find { it.key == expectedProperty.key }
+		val checkOutcome = expectedProperty.compare(foundProperty)
 		return CheckResult(
 			check = this,
 			expected = expectedProperty,
-			found = repository.openShiftProperties.find { it.key == expectedProperty.key },
-			required = required
+			found = foundProperty,
+			required = required,
+			checkOutcome = checkOutcome,
+			checkStatus = getCheckStatus(checkOutcome, required)
 		)
+	}
+
+	private fun getCheckStatus(checkOutcome: CheckOutcome, required: Boolean): CheckStatus {
+
+		return when (checkOutcome) {
+			CheckOutcome.UP_TO_DATE -> CheckStatus.SUCCESS
+			CheckOutcome.OUTDATED -> CheckStatus.WARNING
+			CheckOutcome.VERY_OUTDATED -> CheckStatus.DANGER
+			CheckOutcome.NOT_FOUND -> if (required) CheckStatus.DANGER else CheckStatus.UNNECESSARY
+			else -> CheckStatus.UNNECESSARY
+		}
 	}
 }
