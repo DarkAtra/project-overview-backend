@@ -11,7 +11,7 @@ import java.util.Optional
 
 interface BitBucketClient {
 
-	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos")
+	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos?limit=9999")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
 	fun getRepositories(
 		@Param("projectKey") project: String
