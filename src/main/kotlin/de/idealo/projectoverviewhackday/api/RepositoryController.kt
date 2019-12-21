@@ -27,7 +27,7 @@ class RepositoryController(private val repositoryService: RepositoryService) {
 	}
 
 	@Scheduled(fixedDelay = 30000)
-	@CachePut("repositories")
+	@CachePut("repositories", key = "#checkOutcome + '_' + #checkStatus")
 	fun refreshCache(): List<Repository> {
 		return repositoryService.getRepositories(null, null)
 	}
