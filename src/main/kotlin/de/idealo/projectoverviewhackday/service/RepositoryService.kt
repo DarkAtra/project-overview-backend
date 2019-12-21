@@ -69,8 +69,8 @@ class RepositoryService(
 			.filter { repositoryEntity -> !repositoryServiceProperties.excludedRepositories.contains(repositoryEntity.name) }
 			.map { repositoryEntity ->
 				bitBucketClient.getPom(repositoryEntity.project.key, repositoryEntity.slug)
-					.map { pom -> Repository.Builder.of(repositoryEntity.name, mavenPomParser.parse(pom)) }
-					.orElse(Repository.Builder(repositoryEntity.name))
+					.map { pom -> Repository.Builder.of(repositoryEntity.name, repositoryEntity.project.key, mavenPomParser.parse(pom)) }
+					.orElse(Repository.Builder(repositoryEntity.name, repositoryEntity.project.key))
 					.openShiftProperties(getOpenShiftProperties(repositoryEntity, OpenShiftPropertyTarget.PROJECT)
 						.merge(getOpenShiftProperties(repositoryEntity, OpenShiftPropertyTarget.PRODUCTION)))
 			}

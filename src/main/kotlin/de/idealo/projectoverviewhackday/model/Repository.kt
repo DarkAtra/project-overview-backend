@@ -5,6 +5,7 @@ import org.apache.maven.model.Model
 
 data class Repository(
 	val name: String,
+	val project: String,
 	@JsonIgnore
 	val parent: Artifact?,
 	@JsonIgnore
@@ -18,6 +19,7 @@ data class Repository(
 
 	data class Builder(
 		val name: String,
+		val project: String,
 		var parent: Artifact? = null,
 		var dependencies: List<Artifact> = emptyList(),
 		var properties: List<Property> = emptyList(),
@@ -25,9 +27,10 @@ data class Repository(
 	) {
 
 		companion object {
-			fun of(name: String, model: Model?): Builder {
+			fun of(name: String, project: String, model: Model?): Builder {
 				return Builder(
 					name = name,
+					project = project,
 					parent = model?.parent?.let(Artifact.Companion::of),
 					dependencies = model?.dependencies?.mapNotNull(Artifact.Companion::of) ?: emptyList(),
 					properties = model?.properties?.mapNotNull { Property(it.key.toString(), it.value.toString()) } ?: emptyList()
@@ -41,6 +44,7 @@ data class Repository(
 		fun openShiftProperties(openShiftProperties: List<Property>) = apply { this.openShiftProperties = openShiftProperties }
 		fun build() = Repository(
 			name = name,
+			project = project,
 			parent = parent,
 			dependencies = dependencies,
 			properties = properties,
