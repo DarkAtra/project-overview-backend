@@ -31,7 +31,7 @@ class RepositoryService(
 	@CachePut("repositories")
 	fun reloadCache(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> = getRepositoriesInternal(checkOutcome, checkStatus)
 
-	@Cacheable("repositories")
+	@Cacheable("repositories", sync = true)
 	fun getRepositories(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> = getRepositoriesInternal(checkOutcome, checkStatus)
 
 	private fun getRepositoriesInternal(checkOutcome: CheckOutcome?, checkStatus: CheckStatus?): List<Repository> {

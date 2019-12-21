@@ -14,14 +14,14 @@ interface BitBucketClient {
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos?limit=9999")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
-	@Cacheable("bitbucket_repositories")
+	@Cacheable("bitbucket_repositories", sync = true)
 	fun getRepositories(
 		@Param("projectKey") project: String
 	): PageableEntity<RepositoryEntity>
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw/pom.xml")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
-	@Cacheable("bitbucket_pom")
+	@Cacheable("bitbucket_pom", sync = true)
 	fun getPom(
 		@Param("projectKey") project: String,
 		@Param("repositorySlug") repository: String
@@ -29,7 +29,7 @@ interface BitBucketClient {
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw/scm/openshift/{openShiftPropertyTarget}.properties")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
-	@Cacheable("bitbucket_openshift_properties")
+	@Cacheable("bitbucket_openshift_properties", sync = true)
 	fun getOpenshiftProperties(
 		@Param("projectKey") project: String,
 		@Param("repositorySlug") repository: String,
