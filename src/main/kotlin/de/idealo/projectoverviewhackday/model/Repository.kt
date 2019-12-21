@@ -15,7 +15,7 @@ data class Repository(
 	@JsonIgnore
 	val openShiftProperties: List<Property> = emptyList()
 ) {
-	val checkResults: MutableList<CheckResult> = mutableListOf()
+	val checkResults: MutableList<CheckResult<out Any>> = mutableListOf()
 
 	data class Builder(
 		val name: String,
@@ -23,24 +23,16 @@ data class Repository(
 		var parent: Artifact? = null,
 		var dependencies: List<Artifact> = emptyList(),
 		var properties: List<Property> = emptyList(),
-		var openShiftProperties: List<Property> = emptyList()
+		var openShiftProperties: List<Property> = emptyList(),
+		var versionParser: VersionParser = VersionParser()
 	) {
 
-		companion object {
-			fun of(name: String, project: String, model: Model?): Builder {
-				return Builder(
-					name = name,
-					project = project,
-					parent = model?.parent?.let(Artifact.Companion::of),
-					dependencies = model?.dependencies?.mapNotNull(Artifact.Companion::of) ?: emptyList(),
-					properties = model?.properties?.mapNotNull { Property(it.key.toString(), it.value.toString()) } ?: emptyList()
-				)
-			}
+		fun model(model: Model?) = apply {
+			this.parent = model?.parent?.let { Artifact.of(it, versionParser) }
+			this.dependencies = model?.dependencies?.mapNotNull { Artifact.of(it, versionParser) } ?: emptyList()
+			this.properties = model?.properties?.mapNotNull { Property(it.key.toString(), it.value.toString()) } ?: emptyList()
 		}
 
-		fun parent(parent: Artifact?) = apply { this.parent = parent }
-		fun dependencies(dependencies: List<Artifact>) = apply { this.dependencies = dependencies }
-		fun properties(properties: List<Property>) = apply { this.properties = properties }
 		fun openShiftProperties(openShiftProperties: List<Property>) = apply { this.openShiftProperties = openShiftProperties }
 		fun build() = Repository(
 			name = name,

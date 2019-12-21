@@ -1,25 +1,14 @@
 package de.idealo.projectoverviewhackday.model
 
-data class DependencyCheck(
-	val artifact: Artifact,
-	val versionEvaluator: VersionEvaluator = VersionEvaluator(),
-	override val displayName: String
-) : Check {
+class DependencyCheck(
+	expectedArtifact: Artifact,
+	override val id: Long,
+	override val name: String,
+	override val required: Boolean
+) : ArtifactCheck(expectedArtifact) {
 
-	override fun check(repository: Repository): CheckOutcome {
-
-		val dependency = repository.dependencies
-			.find { it.groupId == artifact.groupId && it.artifactId == artifact.artifactId }
-			?: return CheckOutcome.NOT_PRESENT
-
-		return artifact.version
-			?.let { versionEvaluator.parse(it) }
-			?.let { latestVersion ->
-				dependency.version
-					?.let { versionEvaluator.parse(it) }
-					?.let { versionEvaluator.evaluate(it, latestVersion) }
-					?: return CheckOutcome.UNKNOWN
-			}
-			?: CheckOutcome.UNKNOWN
+	override fun getArtifact(repository: Repository): Artifact? {
+		return repository.dependencies
+			.find { it.groupId == expectedArtifact.groupId && it.artifactId == expectedArtifact.artifactId }
 	}
 }

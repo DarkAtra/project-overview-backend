@@ -1,23 +1,11 @@
 package de.idealo.projectoverviewhackday.model
 
-data class ParentCheck(
-	val artifact: Artifact,
-	val versionEvaluator: VersionEvaluator = VersionEvaluator(deprecateThreshold = 2),
-	override val displayName: String
-) : Check {
+class ParentCheck(
+	expectedArtifact: Artifact,
+	override val id: Long,
+	override val name: String,
+	override val required: Boolean
+) : ArtifactCheck(expectedArtifact) {
 
-	override fun check(repository: Repository): CheckOutcome {
-
-		val parent = repository.parent ?: return CheckOutcome.NOT_PRESENT
-
-		return artifact.version
-			?.let { versionEvaluator.parse(it) }
-			?.let { latestVersion ->
-				parent.version
-					?.let { versionEvaluator.parse(it) }
-					?.let { versionEvaluator.evaluate(it, latestVersion) }
-					?: return CheckOutcome.UNKNOWN
-			}
-			?: CheckOutcome.UNKNOWN
-	}
+	override fun getArtifact(repository: Repository): Artifact? = repository.parent
 }

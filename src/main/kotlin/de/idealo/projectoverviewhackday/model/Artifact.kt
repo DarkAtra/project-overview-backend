@@ -6,22 +6,22 @@ import org.apache.maven.model.Parent
 data class Artifact(
 	val groupId: String,
 	val artifactId: String,
-	val version: String?
+	val version: Version?
 ) {
 	companion object {
-		fun of(parent: Parent): Artifact {
+		fun of(parent: Parent, versionParser: VersionParser): Artifact {
 			return Artifact(
 				groupId = parent.groupId,
 				artifactId = parent.artifactId,
-				version = parent.version
+				version = versionParser.parse(parent.version)
 			)
 		}
 
-		fun of(dependency: Dependency): Artifact {
+		fun of(dependency: Dependency, versionParser: VersionParser): Artifact {
 			return Artifact(
 				groupId = dependency.groupId,
 				artifactId = dependency.artifactId,
-				version = dependency.version
+				version = versionParser.parse(dependency.version)
 			)
 		}
 	}
