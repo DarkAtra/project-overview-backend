@@ -1,4 +1,4 @@
-package de.idealo.projectoverviewhackday.service
+package de.idealo.projectoverviewhackday.common
 
 import de.idealo.projectoverviewhackday.model.Property
 import org.springframework.stereotype.Component

@@ -1,18 +1,14 @@
 package de.idealo.projectoverviewhackday.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.apache.maven.model.Model
 
 data class Repository(
 	val name: String,
 	val project: String,
-	@JsonIgnore
+	val url: String,
 	val parent: Artifact?,
-	@JsonIgnore
 	val dependencies: List<Artifact> = emptyList(),
-	@JsonIgnore
 	val properties: List<Property> = emptyList(),
-	@JsonIgnore
 	val openShiftProperties: List<Property> = emptyList()
 ) {
 	val checkResults: MutableList<CheckResult<out Any>> = mutableListOf()
@@ -20,6 +16,7 @@ data class Repository(
 	data class Builder(
 		val name: String,
 		val project: String,
+		val url: String,
 		var parent: Artifact? = null,
 		var dependencies: List<Artifact> = emptyList(),
 		var properties: List<Property> = emptyList(),
@@ -37,6 +34,7 @@ data class Repository(
 		fun build() = Repository(
 			name = name,
 			project = project,
+			url = url,
 			parent = parent,
 			dependencies = dependencies,
 			properties = properties,

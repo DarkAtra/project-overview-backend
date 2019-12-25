@@ -5,8 +5,8 @@ import org.springframework.validation.annotation.Validated
 import javax.validation.constraints.NotBlank
 
 @Validated
-@ConfigurationProperties("clients.bit-bucket")
-data class BitBucketClientProperties(
+@ConfigurationProperties("adapters.bit-bucket")
+data class BitBucketAdapterProperties(
 	@field:NotBlank
 	var url: String?,
 	@field:NotBlank

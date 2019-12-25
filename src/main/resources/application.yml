@@ -7,7 +7,7 @@ services:
     project: ~
     excluded-repositories: []
 
-clients:
+adapters:
   bit-bucket:
     url: ~
     token: ~
@@ -15,3 +15,6 @@ clients:
 feign:
   okhttp:
     enabled: true
+
+security:
+  allowed-origins: ~

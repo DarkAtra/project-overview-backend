@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Import
 
 @Configuration
 @Import(FeignClientsConfiguration::class)
-@EnableConfigurationProperties(BitBucketClientProperties::class)
-class BitBucketClientConfiguration(private val bitBucketClientProperties: BitBucketClientProperties) {
+@EnableConfigurationProperties(BitBucketAdapterProperties::class)
+class BitBucketAdapterConfiguration(private val bitBucketAdapterProperties: BitBucketAdapterProperties) {
 
 	@Bean
 	fun bitBucketClient(client: Client,
@@ -28,14 +28,14 @@ class BitBucketClientConfiguration(private val bitBucketClientProperties: BitBuc
 			.decoder(feignDecoder)
 			.decode404()
 			.requestInterceptor(bitBucketClientAuthenticationInterceptor)
-			.target(BitBucketClient::class.java, bitBucketClientProperties.url!!)
+			.target(BitBucketClient::class.java, bitBucketAdapterProperties.url!!)
 	}
 
 	@Bean
 	fun bitBucketClientAuthenticationInterceptor(): RequestInterceptor {
 
 		return RequestInterceptor {
-			it.header("Authorization", "Bearer ${bitBucketClientProperties.token!!}")
+			it.header("Authorization", "Bearer ${bitBucketAdapterProperties.token!!}")
 		}
 	}
 }

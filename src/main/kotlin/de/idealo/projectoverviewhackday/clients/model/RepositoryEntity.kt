@@ -1,8 +1,10 @@
 package de.idealo.projectoverviewhackday.clients.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class RepositoryEntity(
-	val slug: String,
-	val id: Long,
+	@JsonProperty("slug")
+	val id: String,
 	val name: String,
 	val project: ProjectEntity
 )
