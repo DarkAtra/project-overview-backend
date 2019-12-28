@@ -1,4 +1,4 @@
-package de.idealo.projectoverviewhackday.clients.model
+package de.idealo.projectoverviewhackday.clients.common
 
 enum class OpenShiftPropertyTarget {
 	TESTING,

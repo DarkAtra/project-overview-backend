@@ -1,4 +1,4 @@
-package de.idealo.projectoverviewhackday.clients.model
+package de.idealo.projectoverviewhackday.clients.bitbucket.model
 
 data class PageableEntity<T>(
 	val size: Long,

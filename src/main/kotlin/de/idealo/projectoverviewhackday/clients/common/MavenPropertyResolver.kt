@@ -1,4 +1,4 @@
-package de.idealo.projectoverviewhackday.common
+package de.idealo.projectoverviewhackday.clients.common
 
 import org.apache.maven.model.Dependency
 import org.apache.maven.model.Model

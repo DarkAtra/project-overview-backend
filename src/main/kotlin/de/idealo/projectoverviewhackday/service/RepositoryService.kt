@@ -1,6 +1,6 @@
 package de.idealo.projectoverviewhackday.service
 
-import de.idealo.projectoverviewhackday.common.RepositoryAdapter
+import de.idealo.projectoverviewhackday.clients.common.RepositoryAdapter
 import de.idealo.projectoverviewhackday.model.Check
 import de.idealo.projectoverviewhackday.model.CheckOutcome
 import de.idealo.projectoverviewhackday.model.CheckStatus

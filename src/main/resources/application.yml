@@ -11,6 +11,9 @@ adapters:
   bit-bucket:
     url: ~
     token: ~
+  gitea:
+    url: ~
+    token: ~
 
 feign:
   okhttp:

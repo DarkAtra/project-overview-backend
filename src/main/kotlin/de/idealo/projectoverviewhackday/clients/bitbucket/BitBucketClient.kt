@@ -1,7 +1,7 @@
-package de.idealo.projectoverviewhackday.clients
+package de.idealo.projectoverviewhackday.clients.bitbucket
 
-import de.idealo.projectoverviewhackday.clients.model.PageableEntity
-import de.idealo.projectoverviewhackday.clients.model.RepositoryEntity
+import de.idealo.projectoverviewhackday.clients.bitbucket.model.PageableEntity
+import de.idealo.projectoverviewhackday.clients.bitbucket.model.RepositoryEntity
 import feign.Headers
 import feign.Param
 import feign.RequestLine

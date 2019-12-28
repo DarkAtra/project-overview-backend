@@ -1,5 +1,7 @@
-package de.idealo.projectoverviewhackday.clients
+package de.idealo.projectoverviewhackday.clients.bitbucket
 
+import de.idealo.projectoverviewhackday.clients.common.MavenPomParser
+import de.idealo.projectoverviewhackday.clients.common.OpenShiftPropertyParser
 import feign.Client
 import feign.Feign
 import feign.RequestInterceptor
@@ -10,11 +12,27 @@ import org.springframework.cloud.openfeign.FeignClientsConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Profile
 
 @Configuration
+@Profile("bitbucket")
 @Import(FeignClientsConfiguration::class)
 @EnableConfigurationProperties(BitBucketAdapterProperties::class)
 class BitBucketAdapterConfiguration(private val bitBucketAdapterProperties: BitBucketAdapterProperties) {
+
+	@Bean
+	fun bitBucketRepositoryAdapter(bitBucketClient: BitBucketClient,
+								   bitBucketAdapterProperties: BitBucketAdapterProperties,
+								   mavenPomParser: MavenPomParser,
+								   openShiftPropertyParser: OpenShiftPropertyParser): BitBucketRepositoryAdapter {
+
+		return BitBucketRepositoryAdapter(
+			bitBucketClient = bitBucketClient,
+			bitBucketAdapterProperties = bitBucketAdapterProperties,
+			mavenPomParser = mavenPomParser,
+			openShiftPropertyParser = openShiftPropertyParser
+		)
+	}
 
 	@Bean
 	fun bitBucketClient(client: Client,
@@ -28,7 +46,7 @@ class BitBucketAdapterConfiguration(private val bitBucketAdapterProperties: BitB
 			.decoder(feignDecoder)
 			.decode404()
 			.requestInterceptor(bitBucketClientAuthenticationInterceptor)
-			.target(BitBucketClient::class.java, bitBucketAdapterProperties.url!!)
+			.target(BitBucketClient::class.java, bitBucketAdapterProperties.url!!.toString())
 	}
 
 	@Bean
