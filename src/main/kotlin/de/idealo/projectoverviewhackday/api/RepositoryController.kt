@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@CrossOrigin("\${security.allowed-origins}")
+@CrossOrigin(origins = ["\${security.allowed-origins}"])
 @RequestMapping("/repositories", produces = [MediaType.APPLICATION_JSON_VALUE])
 class RepositoryController(private val repositoryService: RepositoryService) {
 
