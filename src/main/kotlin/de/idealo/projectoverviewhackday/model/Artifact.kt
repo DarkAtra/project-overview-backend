@@ -8,8 +8,11 @@ data class Artifact(
 	val artifactId: String,
 	val version: Version?
 ) {
+
 	companion object {
+
 		fun of(parent: Parent, versionParser: VersionParser): Artifact {
+
 			return Artifact(
 				groupId = parent.groupId,
 				artifactId = parent.artifactId,
@@ -18,6 +21,7 @@ data class Artifact(
 		}
 
 		fun of(dependency: Dependency, versionParser: VersionParser): Artifact {
+
 			return Artifact(
 				groupId = dependency.groupId,
 				artifactId = dependency.artifactId,
@@ -27,6 +31,7 @@ data class Artifact(
 	}
 
 	fun compare(other: Artifact?): CheckOutcome {
+
 		return when {
 			other == null -> CheckOutcome.NOT_FOUND
 			version == null -> CheckOutcome.UNKNOWN

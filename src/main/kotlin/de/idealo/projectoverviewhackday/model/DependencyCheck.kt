@@ -8,7 +8,7 @@ class DependencyCheck(
 ) : ArtifactCheck(expectedArtifact) {
 
 	override fun getArtifact(repository: Repository): Artifact? {
-		return repository.dependencies
-			.find { it.groupId == expectedArtifact.groupId && it.artifactId == expectedArtifact.artifactId }
+
+		return repository.dependencies.find { it.groupId == expectedArtifact.groupId && it.artifactId == expectedArtifact.artifactId }
 	}
 }

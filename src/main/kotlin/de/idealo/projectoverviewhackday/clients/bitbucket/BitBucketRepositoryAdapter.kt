@@ -7,6 +7,7 @@ import de.idealo.projectoverviewhackday.clients.common.OpenShiftPropertyTarget
 import de.idealo.projectoverviewhackday.clients.common.RepositoryAdapter
 import de.idealo.projectoverviewhackday.model.Property
 import de.idealo.projectoverviewhackday.model.Repository
+import de.idealo.projectoverviewhackday.model.Repository.RepositoryBuilder
 import de.idealo.projectoverviewhackday.model.merge
 import org.apache.maven.model.Model
 import org.springframework.cache.annotation.CacheEvict
@@ -24,12 +25,12 @@ open class BitBucketRepositoryAdapter(
 
 		return bitBucketClient.getRepositories(project).values
 			.map { repositoryEntity ->
-				Repository.Builder(repositoryEntity.name, repositoryEntity.project.name, getRepositoryUrl(repositoryEntity))
+				RepositoryBuilder(repositoryEntity.name, repositoryEntity.project.name, getRepositoryUrl(repositoryEntity))
 					.model(getPom(repositoryEntity))
 					.openShiftProperties(getOpenShiftProperties(repositoryEntity, OpenShiftPropertyTarget.PROJECT)
 						.merge(getOpenShiftProperties(repositoryEntity, OpenShiftPropertyTarget.PRODUCTION)))
 			}
-			.map(Repository.Builder::build)
+			.map(RepositoryBuilder::build)
 	}
 
 	private fun getRepositoryUrl(repositoryEntity: RepositoryEntity): String {

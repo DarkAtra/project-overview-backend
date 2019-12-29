@@ -13,7 +13,7 @@ data class Repository(
 ) {
 	val checkResults: MutableList<CheckResult<out Any>> = mutableListOf()
 
-	data class Builder(
+	class RepositoryBuilder(
 		val name: String,
 		val project: String,
 		val url: String,
@@ -24,21 +24,31 @@ data class Repository(
 		var versionParser: VersionParser = VersionParser()
 	) {
 
-		fun model(model: Model?) = apply {
-			this.parent = model?.parent?.let { Artifact.of(it, versionParser) }
-			this.dependencies = model?.dependencies?.mapNotNull { Artifact.of(it, versionParser) } ?: emptyList()
-			this.properties = model?.properties?.mapNotNull { Property(it.key.toString(), it.value.toString()) } ?: emptyList()
+		fun model(model: Model?): RepositoryBuilder {
+
+			return apply {
+				this.parent = model?.parent?.let { Artifact.of(it, versionParser) }
+				this.dependencies = model?.dependencies?.mapNotNull { Artifact.of(it, versionParser) } ?: emptyList()
+				this.properties = model?.properties?.mapNotNull { Property(it.key.toString(), it.value.toString()) } ?: emptyList()
+			}
 		}
 
-		fun openShiftProperties(openShiftProperties: List<Property>) = apply { this.openShiftProperties = openShiftProperties }
-		fun build() = Repository(
-			name = name,
-			project = project,
-			url = url,
-			parent = parent,
-			dependencies = dependencies,
-			properties = properties,
-			openShiftProperties = openShiftProperties
-		)
+		fun openShiftProperties(openShiftProperties: List<Property>): RepositoryBuilder {
+
+			return apply { this.openShiftProperties = openShiftProperties }
+		}
+
+		fun build(): Repository {
+
+			return Repository(
+				name = name,
+				project = project,
+				url = url,
+				parent = parent,
+				dependencies = dependencies,
+				properties = properties,
+				openShiftProperties = openShiftProperties
+			)
+		}
 	}
 }
