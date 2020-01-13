@@ -2,8 +2,8 @@ package de.idealo.projectoverviewhackday.clients.bitbucket
 
 import de.idealo.projectoverviewhackday.clients.common.MavenPomParser
 import de.idealo.projectoverviewhackday.clients.common.OpenShiftPropertyParser
-import feign.Client
 import feign.Feign
+import feign.Request
 import feign.RequestInterceptor
 import feign.codec.Decoder
 import feign.codec.Encoder
@@ -22,7 +22,6 @@ class BitBucketAdapterConfiguration(private val bitBucketAdapterProperties: BitB
 
 	@Bean
 	fun bitBucketRepositoryAdapter(bitBucketClient: BitBucketClient,
-								   bitBucketAdapterProperties: BitBucketAdapterProperties,
 								   mavenPomParser: MavenPomParser,
 								   openShiftPropertyParser: OpenShiftPropertyParser): BitBucketRepositoryAdapter {
 
@@ -35,13 +34,12 @@ class BitBucketAdapterConfiguration(private val bitBucketAdapterProperties: BitB
 	}
 
 	@Bean
-	fun bitBucketClient(client: Client,
-						feignEncoder: Encoder,
+	fun bitBucketClient(feignEncoder: Encoder,
 						feignDecoder: Decoder,
 						bitBucketClientAuthenticationInterceptor: RequestInterceptor): BitBucketClient {
 
 		return Feign.builder()
-			.client(client)
+			.options(Request.Options(bitBucketAdapterProperties.connectTimeoutMillis.toInt(), bitBucketAdapterProperties.readTimeoutMillis.toInt()))
 			.encoder(feignEncoder)
 			.decoder(feignDecoder)
 			.decode404()

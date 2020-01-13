@@ -15,9 +15,5 @@ adapters:
     url: ~
     token: ~
 
-feign:
-  okhttp:
-    enabled: true
-
 security:
   allowed-origins: ~

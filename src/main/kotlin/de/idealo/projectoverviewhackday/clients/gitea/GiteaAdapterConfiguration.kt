@@ -2,8 +2,8 @@ package de.idealo.projectoverviewhackday.clients.gitea
 
 import de.idealo.projectoverviewhackday.clients.common.MavenPomParser
 import de.idealo.projectoverviewhackday.clients.common.OpenShiftPropertyParser
-import feign.Client
 import feign.Feign
+import feign.Request
 import feign.RequestInterceptor
 import feign.codec.Decoder
 import feign.codec.Encoder
@@ -22,7 +22,6 @@ class GiteaAdapterConfiguration(private val giteaAdapterProperties: GiteaAdapter
 
 	@Bean
 	fun giteaRepositoryAdapter(giteaClient: GiteaClient,
-							   giteaAdapterProperties: GiteaAdapterProperties,
 							   mavenPomParser: MavenPomParser,
 							   openShiftPropertyParser: OpenShiftPropertyParser): GiteaRepositoryAdapter {
 
@@ -35,13 +34,12 @@ class GiteaAdapterConfiguration(private val giteaAdapterProperties: GiteaAdapter
 	}
 
 	@Bean
-	fun giteaClient(client: Client,
-					feignEncoder: Encoder,
+	fun giteaClient(feignEncoder: Encoder,
 					feignDecoder: Decoder,
 					giteaClientAuthenticationInterceptor: RequestInterceptor): GiteaClient {
 
 		return Feign.builder()
-			.client(client)
+			.options(Request.Options(giteaAdapterProperties.connectTimeoutMillis.toInt(), giteaAdapterProperties.readTimeoutMillis.toInt()))
 			.encoder(feignEncoder)
 			.decoder(feignDecoder)
 			.decode404()
