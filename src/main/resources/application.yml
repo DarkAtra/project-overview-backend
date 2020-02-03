@@ -5,7 +5,7 @@ spring:
 services:
   repository:
     project: ~
-    excluded-repositories: []
+    checks: []
 
 adapters:
   bit-bucket:
