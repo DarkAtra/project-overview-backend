@@ -2,6 +2,10 @@ spring:
   profiles:
     include: gitea
 
+services:
+  repository:
+    project: project
+
 adapters:
   gitea:
     url: http://localhost:8080
