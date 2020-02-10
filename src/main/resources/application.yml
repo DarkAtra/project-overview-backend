@@ -2,6 +2,15 @@ spring:
   main:
     banner-mode: off
 
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+    info:
+      enabled: true
+
 services:
   repository:
     project: ~
