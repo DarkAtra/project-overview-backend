@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("it")
 class RepositoryOverviewHackdayApplicationTests {
 
-    @Test
-    fun contextLoads() {
-    }
+	@Test
+	fun contextLoads() {
+	}
 }
