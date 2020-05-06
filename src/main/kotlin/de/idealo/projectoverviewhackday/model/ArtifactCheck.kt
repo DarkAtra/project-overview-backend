@@ -13,9 +13,6 @@ abstract class ArtifactCheck(
 		val checkOutcome = expectedArtifact.compare(foundArtifact)
 		return CheckResult(
 			check = this,
-			expected = expectedArtifact,
-			found = foundArtifact,
-			required = required,
 			checkOutcome = checkOutcome,
 			checkStatus = getCheckStatus(checkOutcome, required)
 		)

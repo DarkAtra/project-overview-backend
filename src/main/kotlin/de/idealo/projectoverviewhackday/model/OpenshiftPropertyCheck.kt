@@ -13,9 +13,6 @@ class OpenshiftPropertyCheck(
 		val checkOutcome = expectedProperty.compare(foundProperty)
 		return CheckResult(
 			check = this,
-			expected = expectedProperty,
-			found = foundProperty,
-			required = required,
 			checkOutcome = checkOutcome,
 			checkStatus = getCheckStatus(checkOutcome, required)
 		)
