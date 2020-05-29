@@ -1,5 +1,5 @@
 package de.idealo.projectoverviewhackday.model
 
 interface VersionResolver {
-	fun resolve(): Version
+	fun resolve(groupId: String, artifactId: String): Version
 }

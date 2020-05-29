@@ -7,10 +7,13 @@ import de.idealo.projectoverviewhackday.model.OpenshiftPropertyCheck
 import de.idealo.projectoverviewhackday.model.ParentCheck
 import de.idealo.projectoverviewhackday.model.Property
 import de.idealo.projectoverviewhackday.model.StaticVersionResolver
+import de.idealo.projectoverviewhackday.model.UrlVersionResolver
 import de.idealo.projectoverviewhackday.model.Version
+import de.idealo.projectoverviewhackday.model.VersionParser
 import de.idealo.projectoverviewhackday.model.VersionResolver
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
+import java.net.URL
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -105,7 +108,7 @@ data class RepositoryServiceProperties(
 			return Artifact(
 				groupId = groupId!!,
 				artifactId = artifactId!!,
-				version = versionResolver!!.build().resolve()
+				version = versionResolver!!.build().resolve(groupId!!, artifactId!!)
 			)
 		}
 	}
@@ -132,18 +135,25 @@ data class RepositoryServiceProperties(
 		@field:NotNull
 		var type: Type? = null,
 
+		var url: URL? = null,
+
 		@field:Valid
 		var version: VersionTemplate? = null
 	) {
 
 		enum class Type {
-			STATIC
+			STATIC,
+			URL
 		}
 
 		fun build(): VersionResolver {
 			return when (type) {
 				Type.STATIC -> StaticVersionResolver(
 					version = version!!.build()
+				)
+				Type.URL -> UrlVersionResolver(
+					url = url!!,
+					versionParser = VersionParser() // FIXME: should be configurable to support other formats
 				)
 				else -> throw UnsupportedOperationException("Type '$type' is not supported.")
 			}
