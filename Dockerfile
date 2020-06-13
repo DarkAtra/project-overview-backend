@@ -5,9 +5,12 @@ COPY src src
 RUN mvn install
 
 FROM openjdk:11-jdk-slim as service
-WORKDIR /app
-COPY --from=build --chown=projectoverview:projectoverview /app/target/project-overview-hackday.jar project-overview-hackday.jar
+
 RUN addgroup --system --gid 101 projectoverview \
 	&& adduser --system --disabled-login --ingroup projectoverview --no-create-home --home /nonexistent --gecos "projectoverview user" --shell /bin/false --uid 101 projectoverview
+
+WORKDIR /app
+COPY --from=build --chown=projectoverview:projectoverview /app/target/project-overview-hackday.jar project-overview-hackday.jar
+
 USER 101
 ENTRYPOINT ["java","-jar","project-overview-hackday.jar"]
