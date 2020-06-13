@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+      name: business,projectoverviewbackend
+      fail-fast: true
