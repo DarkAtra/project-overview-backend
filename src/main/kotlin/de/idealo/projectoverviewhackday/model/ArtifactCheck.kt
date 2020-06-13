@@ -1,6 +1,5 @@
 package de.idealo.projectoverviewhackday.model
 
-
 abstract class ArtifactCheck(
 	protected val expectedArtifact: Artifact
 ) : Check<Artifact> {
@@ -10,7 +9,7 @@ abstract class ArtifactCheck(
 	override fun check(repository: Repository): CheckResult<Artifact> {
 
 		val foundArtifact = getArtifact(repository)
-		val checkOutcome = expectedArtifact.compare(foundArtifact)
+		val checkOutcome = foundArtifact?.compare(expectedArtifact) ?: CheckOutcome.NOT_FOUND
 		return CheckResult(
 			check = this,
 			checkOutcome = checkOutcome,

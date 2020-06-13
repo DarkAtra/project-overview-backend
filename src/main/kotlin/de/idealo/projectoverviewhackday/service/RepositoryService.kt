@@ -15,6 +15,7 @@ class RepositoryService(
 
 	fun getRepositories(checkOutcome: List<CheckOutcome>, checkStatus: List<CheckStatus>): List<Repository> {
 
+		// TODO: add a way to filter repositories
 		return repositoryAdapter.getRepositories(repositoryServiceProperties.project!!)
 			.onEach { performChecks(it, checkOutcome, checkStatus) }
 			.filter { it.checkResults.isNotEmpty() }

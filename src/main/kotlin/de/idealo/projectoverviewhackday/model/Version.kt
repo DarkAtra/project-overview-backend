@@ -5,12 +5,14 @@ data class Version(
 	val minor: Long,
 	val build: Long
 ) {
-	fun compare(other: Version?): CheckOutcome {
+	fun compare(wantedVersion: Version?): CheckOutcome {
 
 		return when {
-			other == null -> CheckOutcome.NOT_FOUND
-			major - other.major > 1 -> CheckOutcome.VERY_OUTDATED
-			major - other.major > 0 || minor - other.minor > 0 || build - other.build > 0 -> CheckOutcome.OUTDATED
+			wantedVersion == null -> CheckOutcome.NOT_FOUND
+			wantedVersion.major - major > 1 -> CheckOutcome.VERY_OUTDATED
+			wantedVersion.major - major > 0 -> CheckOutcome.OUTDATED
+			wantedVersion.minor - minor > 0 && wantedVersion.major - major >= 0 -> CheckOutcome.OUTDATED
+			wantedVersion.build - build > 0 && wantedVersion.minor - minor >= 0 && wantedVersion.major - major >= 0 -> CheckOutcome.OUTDATED
 			else -> CheckOutcome.UP_TO_DATE
 		}
 	}

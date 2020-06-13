@@ -137,6 +137,8 @@ data class RepositoryServiceProperties(
 
 		var url: URL? = null,
 
+		var compareToLatest: Boolean? = null,
+
 		@field:Valid
 		var version: VersionTemplate? = null
 	) {
@@ -153,7 +155,8 @@ data class RepositoryServiceProperties(
 				)
 				Type.URL -> UrlVersionResolver(
 					url = url!!,
-					versionParser = VersionParser() // FIXME: should be configurable to support other formats
+					versionParser = VersionParser(), // FIXME: should be configurable to support other formats
+					compareToLatest = compareToLatest ?: false
 				)
 				else -> throw UnsupportedOperationException("Type '$type' is not supported.")
 			}
