@@ -1,8 +1,7 @@
-package de.idealo.projectoverviewhackday.model
+package de.idealo.projectoverviewhackday.modules.repository.service.model
 
 data class Repository(
 	val name: String,
-	val project: String,
 	val browseUrl: String,
 	val cloneUrl: String
 )

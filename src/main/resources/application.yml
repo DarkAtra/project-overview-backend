@@ -11,18 +11,8 @@ management:
     info:
       enabled: true
 
-services:
+projectoverview:
   repository:
-    project: ~
-    dir: ~
-
-adapters:
-  bit-bucket:
-    url: ~
-    token: ~
-  gitea:
-    url: ~
-    token: ~
-
-security:
-  allowed-origins: ~
+    dir: ./repositories
+  security:
+    allowed-origins: ~

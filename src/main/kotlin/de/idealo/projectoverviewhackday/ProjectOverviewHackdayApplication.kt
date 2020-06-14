@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableCaching
 @EnableScheduling
 @SpringBootApplication
-class ProjectOverviewHackdayApplication {
+class ProjectOverviewHackdayApplication() {
 	companion object {
 		@JvmStatic
 		fun main(args: Array<String>) {

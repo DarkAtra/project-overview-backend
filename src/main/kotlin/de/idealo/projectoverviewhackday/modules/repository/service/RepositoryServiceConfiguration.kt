@@ -1,4 +1,4 @@
-package de.idealo.projectoverviewhackday.service
+package de.idealo.projectoverviewhackday.modules.repository.service
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration

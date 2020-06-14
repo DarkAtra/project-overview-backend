@@ -1,4 +1,4 @@
-package de.idealo.projectoverviewhackday.service
+package de.idealo.projectoverviewhackday.modules.repository.service
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
@@ -7,12 +7,8 @@ import javax.validation.constraints.NotBlank
 
 @Validated
 @ConstructorBinding
-@ConfigurationProperties("services.repository")
+@ConfigurationProperties(prefix = "projectoverview", value = "repository")
 data class RepositoryServiceProperties(
-
 	@NotBlank
-	var project: String,
-
-	@NotBlank
-	var dir: String
+	val dir: String
 )
