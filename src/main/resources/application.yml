@@ -14,7 +14,7 @@ management:
 services:
   repository:
     project: ~
-    checks: []
+    dir: ~
 
 adapters:
   bit-bucket:

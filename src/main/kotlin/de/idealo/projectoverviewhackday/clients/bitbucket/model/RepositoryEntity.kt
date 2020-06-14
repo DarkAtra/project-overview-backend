@@ -6,5 +6,6 @@ data class RepositoryEntity(
 	@JsonProperty("slug")
 	val id: String,
 	val name: String,
-	val project: ProjectEntity
+	val project: ProjectEntity,
+	val links: LinkEntity
 )

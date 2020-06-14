@@ -1,7 +1,5 @@
 package de.idealo.projectoverviewhackday.clients.gitea
 
-import de.idealo.projectoverviewhackday.clients.common.MavenPomParser
-import de.idealo.projectoverviewhackday.clients.common.OpenShiftPropertyParser
 import feign.Feign
 import feign.Request
 import feign.RequestInterceptor
@@ -13,6 +11,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
+import java.util.concurrent.TimeUnit
 
 @Configuration
 @Profile("gitea")
@@ -21,37 +20,38 @@ import org.springframework.context.annotation.Profile
 class GiteaAdapterConfiguration(private val giteaAdapterProperties: GiteaAdapterProperties) {
 
 	@Bean
-	fun giteaRepositoryAdapter(giteaClient: GiteaClient,
-							   mavenPomParser: MavenPomParser,
-							   openShiftPropertyParser: OpenShiftPropertyParser): GiteaRepositoryAdapter {
+	fun giteaRepositoryAdapter(giteaClient: GiteaClient): GiteaRepositoryAdapter {
 
 		return GiteaRepositoryAdapter(
-			giteaClient = giteaClient,
-			giteaAdapterProperties = giteaAdapterProperties,
-			mavenPomParser = mavenPomParser,
-			openShiftPropertyParser = openShiftPropertyParser
+			giteaClient = giteaClient
 		)
 	}
 
 	@Bean
 	fun giteaClient(feignEncoder: Encoder,
-					feignDecoder: Decoder,
-					giteaClientAuthenticationInterceptor: RequestInterceptor): GiteaClient {
+	                feignDecoder: Decoder,
+	                giteaClientAuthenticationInterceptor: RequestInterceptor): GiteaClient {
 
 		return Feign.builder()
-			.options(Request.Options(giteaAdapterProperties.connectTimeoutMillis.toInt(), giteaAdapterProperties.readTimeoutMillis.toInt()))
+			.options(Request.Options(
+				giteaAdapterProperties.connectTimeoutMillis,
+				TimeUnit.MILLISECONDS,
+				giteaAdapterProperties.readTimeoutMillis,
+				TimeUnit.MILLISECONDS,
+				true
+			))
 			.encoder(feignEncoder)
 			.decoder(feignDecoder)
 			.decode404()
 			.requestInterceptor(giteaClientAuthenticationInterceptor)
-			.target(GiteaClient::class.java, giteaAdapterProperties.url!!.toString())
+			.target(GiteaClient::class.java, giteaAdapterProperties.url.toString())
 	}
 
 	@Bean
 	fun giteaClientAuthenticationInterceptor(): RequestInterceptor {
 
 		return RequestInterceptor {
-			it.header("Authorization", "Bearer ${giteaAdapterProperties.token!!}")
+			it.header("Authorization", "Bearer ${giteaAdapterProperties.token}")
 		}
 	}
 }

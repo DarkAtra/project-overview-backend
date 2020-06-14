@@ -5,24 +5,16 @@ import de.idealo.projectoverviewhackday.clients.bitbucket.model.RepositoryEntity
 import feign.Headers
 import feign.Param
 import feign.RequestLine
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.MediaType
-import java.util.Optional
 
+/**
+ * Client for the Bitbucket Server API: https://docs.atlassian.com/bitbucket-server/rest/6.4.0/bitbucket-rest.html
+ */
 interface BitBucketClient {
 
 	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos?limit=9999")
 	@Headers("Content-Type: ${MediaType.APPLICATION_JSON_VALUE}")
-	@Cacheable("bitbucket_repositories", sync = true)
 	fun getRepositories(
 		@Param("projectKey") project: String
 	): PageableEntity<RepositoryEntity>
-
-	@RequestLine("GET /rest/api/1.0/projects/{projectKey}/repos/{repositorySlug}/raw/{path}")
-	@Cacheable("bitbucket_raw_file", sync = true)
-	fun getRawFile(
-		@Param("projectKey") project: String,
-		@Param("repositorySlug") repository: String,
-		@Param("path", encoded = true) path: String
-	): Optional<String>
 }

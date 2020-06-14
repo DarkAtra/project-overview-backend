@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/repositories", produces = [MediaType.APPLICATION_JSON_VALUE])
 class RepositoryController(private val repositoryService: RepositoryService) {
 
+	// TODO: redesign the api
 	@GetMapping
 	fun getRepositories(@RequestParam(required = false) checkOutcome: List<CheckOutcome>?,
-						@RequestParam(required = false) checkStatus: List<CheckStatus>?): List<Repository> {
+	                    @RequestParam(required = false) checkStatus: List<CheckStatus>?): List<Repository> {
 
 		return repositoryService.getRepositories(
 			checkOutcome = checkOutcome ?: CheckOutcome.values().toList(),

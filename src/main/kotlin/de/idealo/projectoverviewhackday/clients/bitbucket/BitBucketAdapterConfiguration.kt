@@ -1,7 +1,5 @@
 package de.idealo.projectoverviewhackday.clients.bitbucket
 
-import de.idealo.projectoverviewhackday.clients.common.MavenPomParser
-import de.idealo.projectoverviewhackday.clients.common.OpenShiftPropertyParser
 import feign.Feign
 import feign.Request
 import feign.RequestInterceptor
@@ -13,6 +11,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
+import java.util.concurrent.TimeUnit
 
 @Configuration
 @Profile("bitbucket")
@@ -21,37 +20,39 @@ import org.springframework.context.annotation.Profile
 class BitBucketAdapterConfiguration(private val bitBucketAdapterProperties: BitBucketAdapterProperties) {
 
 	@Bean
-	fun bitBucketRepositoryAdapter(bitBucketClient: BitBucketClient,
-								   mavenPomParser: MavenPomParser,
-								   openShiftPropertyParser: OpenShiftPropertyParser): BitBucketRepositoryAdapter {
+	fun bitBucketRepositoryAdapter(bitBucketClient: BitBucketClient): BitBucketRepositoryAdapter {
 
 		return BitBucketRepositoryAdapter(
 			bitBucketClient = bitBucketClient,
-			bitBucketAdapterProperties = bitBucketAdapterProperties,
-			mavenPomParser = mavenPomParser,
-			openShiftPropertyParser = openShiftPropertyParser
+			bitBucketAdapterProperties = bitBucketAdapterProperties
 		)
 	}
 
 	@Bean
 	fun bitBucketClient(feignEncoder: Encoder,
-						feignDecoder: Decoder,
-						bitBucketClientAuthenticationInterceptor: RequestInterceptor): BitBucketClient {
+	                    feignDecoder: Decoder,
+	                    bitBucketClientAuthenticationInterceptor: RequestInterceptor): BitBucketClient {
 
 		return Feign.builder()
-			.options(Request.Options(bitBucketAdapterProperties.connectTimeoutMillis.toInt(), bitBucketAdapterProperties.readTimeoutMillis.toInt()))
+			.options(Request.Options(
+				bitBucketAdapterProperties.connectTimeoutMillis,
+				TimeUnit.MILLISECONDS,
+				bitBucketAdapterProperties.readTimeoutMillis,
+				TimeUnit.MILLISECONDS,
+				true
+			))
 			.encoder(feignEncoder)
 			.decoder(feignDecoder)
 			.decode404()
 			.requestInterceptor(bitBucketClientAuthenticationInterceptor)
-			.target(BitBucketClient::class.java, bitBucketAdapterProperties.url!!.toString())
+			.target(BitBucketClient::class.java, bitBucketAdapterProperties.url.toString())
 	}
 
 	@Bean
 	fun bitBucketClientAuthenticationInterceptor(): RequestInterceptor {
 
 		return RequestInterceptor {
-			it.header("Authorization", "Bearer ${bitBucketAdapterProperties.token!!}")
+			it.header("Authorization", "Bearer ${bitBucketAdapterProperties.token}")
 		}
 	}
 }
