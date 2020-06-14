@@ -1,9 +1,9 @@
 package de.idealo.projectoverviewhackday.clients.gitea
 
-import de.idealo.projectoverviewhackday.clients.common.GitRepositoryAdapter
+import de.idealo.projectoverviewhackday.clients.common.AbstractGitRepositoryAdapter
 import de.idealo.projectoverviewhackday.model.Repository
 
-open class GiteaRepositoryAdapter(private val giteaClient: GiteaClient) : GitRepositoryAdapter() {
+open class GiteaRepositoryAdapter(private val giteaClient: GiteaClient) : AbstractGitRepositoryAdapter() {
 
 	override fun getRepositories(project: String): List<Repository> {
 

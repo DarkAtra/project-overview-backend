@@ -1,8 +1,6 @@
 package de.idealo.projectoverviewhackday.service
 
 import de.idealo.projectoverviewhackday.clients.common.RepositoryAdapter
-import de.idealo.projectoverviewhackday.model.CheckOutcome
-import de.idealo.projectoverviewhackday.model.CheckStatus
 import de.idealo.projectoverviewhackday.model.Repository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -25,11 +23,6 @@ class RepositoryService(
 				val localRepositoryPath = getLocalRepositoryPath(repository)
 				ensureLocalRepositoryIsUpToDate(repository, localRepositoryPath)
 			}
-	}
-
-	fun getRepositories(checkOutcome: List<CheckOutcome>, checkStatus: List<CheckStatus>): List<Repository> {
-
-		return repositoryAdapter.getRepositories(repositoryServiceProperties.project)
 	}
 
 	private fun ensureLocalRepositoryIsUpToDate(repository: Repository, localRepositoryPath: Path) {

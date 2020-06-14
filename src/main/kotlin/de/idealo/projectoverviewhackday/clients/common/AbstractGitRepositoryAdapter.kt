@@ -7,7 +7,7 @@ import org.eclipse.jgit.api.TransportCommand
 import org.eclipse.jgit.transport.CredentialsProvider
 import java.nio.file.Path
 
-abstract class GitRepositoryAdapter : RepositoryAdapter {
+abstract class AbstractGitRepositoryAdapter : RepositoryAdapter {
 
 	abstract override fun getRepositories(project: String): List<Repository>
 

@@ -1,6 +1,6 @@
 package de.idealo.projectoverviewhackday.clients.bitbucket
 
-import de.idealo.projectoverviewhackday.clients.common.GitRepositoryAdapter
+import de.idealo.projectoverviewhackday.clients.common.AbstractGitRepositoryAdapter
 import de.idealo.projectoverviewhackday.model.Repository
 import org.eclipse.jgit.transport.CredentialsProvider
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
@@ -8,7 +8,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 open class BitBucketRepositoryAdapter(
 	private val bitBucketClient: BitBucketClient,
 	private val bitBucketAdapterProperties: BitBucketAdapterProperties
-) : GitRepositoryAdapter() {
+) : AbstractGitRepositoryAdapter() {
 
 	override fun getRepositories(project: String): List<Repository> {
 
