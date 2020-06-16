@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank
 
 @Validated
 @ConstructorBinding
-@ConfigurationProperties(prefix = "projectoverview", value = "repository")
+@ConfigurationProperties(prefix = "projectoverview.repository")
 data class RepositoryServiceProperties(
 	@NotBlank
 	val dir: String

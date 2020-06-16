@@ -5,7 +5,4 @@ import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface RepositoryAdapter : PagingAndSortingRepository<RepositoryEntity, String> {
-
-	fun getRepositories(): List<RepositoryEntity>
-}
+interface RepositoryAdapter : PagingAndSortingRepository<RepositoryEntity, String>

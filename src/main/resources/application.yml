@@ -16,3 +16,22 @@ projectoverview:
     dir: ./repositories
   security:
     allowed-origins: ~
+
+---
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:h2:mem:projectoverview
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database: h2
+  h2:
+    console:
+      enabled: true
+
+projectoverview:
+  security:
+    allowed-origins: http://localhost:3000

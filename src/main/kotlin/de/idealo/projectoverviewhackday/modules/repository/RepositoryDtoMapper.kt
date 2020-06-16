@@ -9,21 +9,23 @@ class RepositoryDtoMapper {
 
 	fun map(repositoryDto: RepositoryDto): Repository {
 
-		val (name, browseUrl, cloneUrl) = repositoryDto
+		val (name, browseUrl, cloneUrl, _) = repositoryDto
 		return Repository(
 			name = name,
 			browseUrl = browseUrl,
-			cloneUrl = cloneUrl
+			cloneUrl = cloneUrl,
+			checks = emptyList()
 		)
 	}
 
 	fun map(repository: Repository): RepositoryDto {
 
-		val (name, browseUrl, cloneUrl) = repository
+		val (name, browseUrl, cloneUrl, checks) = repository
 		return RepositoryDto(
 			name = name,
 			browseUrl = browseUrl,
-			cloneUrl = cloneUrl
+			cloneUrl = cloneUrl,
+			checks = checks
 		)
 	}
 }

@@ -6,10 +6,13 @@ import javax.persistence.Id
 
 @Entity
 data class RepositoryEntity(
+
 	@Id
 	val name: String,
+
 	@Column(unique = true, nullable = false)
 	val browseUrl: String,
+
 	@Column(unique = true, nullable = false)
 	val cloneUrl: String
 )
