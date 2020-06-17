@@ -1,10 +1,15 @@
 package de.idealo.projectoverviewhackday.clients.check.model
 
-import javax.persistence.Entity
-import javax.persistence.Id
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
+@Document
 data class CheckEntity(
+
 	@Id
-	val name: String
+	val name: String,
+
+	val checkType: CheckTypeEntity,
+
+	val additionalProperties: List<CheckParameterEntity<Any>>
 )

@@ -1,10 +1,11 @@
 package de.idealo.projectoverviewhackday.clients.check.model
 
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
+@Document
 data class CheckToRepositoryEntity(
-	@EmbeddedId
+
+	@Id
 	val id: CheckToRepositoryIdEntity
 )

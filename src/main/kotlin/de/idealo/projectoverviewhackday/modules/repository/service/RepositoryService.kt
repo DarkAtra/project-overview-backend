@@ -1,10 +1,6 @@
 package de.idealo.projectoverviewhackday.modules.repository.service
 
-import de.idealo.projectoverviewhackday.clients.check.CheckAdapter
 import de.idealo.projectoverviewhackday.clients.check.CheckToRepositoryAdapter
-import de.idealo.projectoverviewhackday.clients.check.model.CheckEntity
-import de.idealo.projectoverviewhackday.clients.check.model.CheckToRepositoryEntity
-import de.idealo.projectoverviewhackday.clients.check.model.CheckToRepositoryIdEntity
 import de.idealo.projectoverviewhackday.clients.repository.RepositoryAdapter
 import de.idealo.projectoverviewhackday.clients.repository.RepositoryEntityMapper
 import de.idealo.projectoverviewhackday.modules.common.model.ConflictException
@@ -19,54 +15,30 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
 import java.nio.file.Paths
-import javax.annotation.PostConstruct
 
 @Service
 class RepositoryService(
 	private val repositoryServiceProperties: RepositoryServiceProperties,
 	private val repositoryAdapter: RepositoryAdapter,
 	private val repositoryEntityMapper: RepositoryEntityMapper,
+	private val checkToRepositoryAdapter: CheckToRepositoryAdapter,
 	@Value("\${username}")
 	private val username: String,
 	@Value("\${password}")
-	private val password: String,
-	private val checkAdapter: CheckAdapter,
-	private val checkToRepositoryAdapter: CheckToRepositoryAdapter
+	private val password: String
 ) {
-
-	@PostConstruct
-	fun post() {
-
-		createRepository(
-			Repository(
-				name = "Java8Features",
-				browseUrl = "https://git.darkatra.de/DarkAtra/Java8Features",
-				cloneUrl = "https://git.darkatra.de/DarkAtra/Java8Features.git",
-				checks = emptyList()
-			)
-		)
-
-		checkAdapter.save(
-			CheckEntity(
-				name = "Parent Check"
-			)
-		)
-		checkToRepositoryAdapter.save(
-			CheckToRepositoryEntity(
-				id = CheckToRepositoryIdEntity(
-					repositoryId = "Java8Features",
-					checkId = "Parent Check"
-				)
-			)
-		)
-
-		updateLocalRepositories()
-	}
 
 	fun getRepositories(): List<Repository> {
 
 		return repositoryAdapter.findAll()
 			.map { repositoryEntityMapper.map(it, checkToRepositoryAdapter.findByIdRepositoryId(it.name)) }
+	}
+
+	fun getRepository(name: String): Repository {
+
+		return repositoryAdapter.findById(name)
+			.map { repositoryEntityMapper.map(it, checkToRepositoryAdapter.findByIdRepositoryId(it.name)) }
+			.orElseThrow { NotFoundException("Repository with name '${name}' not found.") }
 	}
 
 	fun createRepository(repository: Repository) {
@@ -94,7 +66,7 @@ class RepositoryService(
 		}
 	}
 
-	private fun ensureLocalRepositoryIsUpToDate(repository: Repository) {
+	fun ensureLocalRepositoryIsUpToDate(repository: Repository) {
 
 		val localRepositoryPath = getLocalRepositoryPath(repository)
 		if (!localRepositoryPath.exists()) {
@@ -103,11 +75,14 @@ class RepositoryService(
 				.setDirectory(localRepositoryPath)
 				.also { configureCredentialsProvider(it, repository) }
 				.call()
+				.use { }
 		} else {
 			Git.open(localRepositoryPath)
-				.pull()
-				.also { configureCredentialsProvider(it, repository) }
-				.call()
+				.use {
+					it.pull()
+						.also { configureCredentialsProvider(it, repository) }
+						.call()
+				}
 		}
 	}
 
