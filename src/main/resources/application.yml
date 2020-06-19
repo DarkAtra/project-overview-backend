@@ -1,6 +1,8 @@
 spring:
   main:
     banner-mode: off
+  cache:
+    type: simple
 
 management:
   endpoints:
@@ -16,6 +18,9 @@ projectoverview:
     dir: ./repositories
   security:
     allowed-origins: ~
+  maven:
+    temp-dir: ./maven-temp
+    executable: ~
 
 ---
 spring:
@@ -24,3 +29,5 @@ spring:
 projectoverview:
   security:
     allowed-origins: http://localhost:3000
+  maven:
+    executable: ${MAVEN_HOME}/bin/mvn.cmd
