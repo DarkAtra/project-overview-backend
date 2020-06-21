@@ -1,8 +1,6 @@
 package de.idealo.projectoverviewhackday.base.model
 
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Check(
-	val type: String
-)
+annotation class RepositoryDirectory

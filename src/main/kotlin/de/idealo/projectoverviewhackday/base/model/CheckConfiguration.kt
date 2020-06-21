@@ -9,7 +9,7 @@ data class CheckConfiguration(
 	@Id
 	val name: String,
 
-	val checkType: CheckType,
+	val type: String,
 
 	val additionalProperties: Map<String, String>
 )

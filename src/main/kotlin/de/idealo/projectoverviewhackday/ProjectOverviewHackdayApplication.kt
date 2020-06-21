@@ -5,7 +5,6 @@ import de.idealo.projectoverviewhackday.base.CheckToRepositoryAdapter
 import de.idealo.projectoverviewhackday.base.RepositoryAdapter
 import de.idealo.projectoverviewhackday.base.model.CheckConfiguration
 import de.idealo.projectoverviewhackday.base.model.CheckToRepository
-import de.idealo.projectoverviewhackday.base.model.CheckType
 import de.idealo.projectoverviewhackday.base.model.Repository
 import de.idealo.projectoverviewhackday.maven.MavenCheck
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -34,29 +33,29 @@ class ProjectOverviewHackdayApplication(
 
 		repositoryAdapter.save(
 			Repository(
-				name = "Java8Features",
-				browseUrl = "https://git.darkatra.de/DarkAtra/Java8Features",
-				cloneUrl = "https://git.darkatra.de/DarkAtra/Java8Features.git"
+				name = "health-probes-issue",
+				browseUrl = "https://github.com/DarkAtra/health-probes-issue",
+				cloneUrl = "https://github.com/DarkAtra/health-probes-issue.git"
 			)
 		)
 
 		checkConfigurationAdapter.save(
 			CheckConfiguration(
-				name = "Parent Check",
-				checkType = CheckType.MAVEN,
+				name = "Spring Boot Web Start Check",
+				type = "maven",
 				additionalProperties = mapOf(
 					MavenCheck.MODE to "dependency",
-					MavenCheck.GROUP_ID to "junit",
-					MavenCheck.ARTIFACT_ID to "junit",
-					MavenCheck.VERSION to "4.12"
+					MavenCheck.GROUP_ID to "org.springframework.boot",
+					MavenCheck.ARTIFACT_ID to "spring-boot-starter-web",
+					MavenCheck.VERSION to "2.3.1.RELEASE"
 				)
 			)
 		)
 		checkToRepositoryAdapter.save(
 			CheckToRepository(
 				id = CheckToRepository.CheckToRepositoryId(
-					repositoryId = "Java8Features",
-					checkId = "Parent Check"
+					repositoryId = "health-probes-issue",
+					checkId = "Spring Boot Web Start Check"
 				)
 			)
 		)

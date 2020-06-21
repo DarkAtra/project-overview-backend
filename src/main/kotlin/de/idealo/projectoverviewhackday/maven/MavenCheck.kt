@@ -2,14 +2,17 @@ package de.idealo.projectoverviewhackday.maven
 
 import de.idealo.projectoverviewhackday.base.model.Check
 import de.idealo.projectoverviewhackday.base.model.CheckResult
+import de.idealo.projectoverviewhackday.base.model.Parameter
+import de.idealo.projectoverviewhackday.base.model.RepositoryDirectory
 import org.springframework.stereotype.Component
 import java.nio.file.Path
 import java.util.Locale
 
 @Component
+@Check("maven")
 class MavenCheck(
 	private val mavenModelResolver: MavenModelResolver
-) : Check {
+) {
 
 	companion object {
 		const val MODE: String = "mode"
@@ -18,16 +21,13 @@ class MavenCheck(
 		const val VERSION: String = "version"
 	}
 
-	override fun performCheck(directory: Path, parameters: Map<String, String>): CheckResult {
+	fun performCheck(@RepositoryDirectory directory: Path, @Parameter(MODE) mode: String, @Parameter groupId: String, @Parameter artifactId: String,
+	                 @Parameter version: String): CheckResult {
 
 		val model = mavenModelResolver.getModel(directory)
 
-		when (parameters[MODE]?.toLowerCase(Locale.ENGLISH)) {
+		when (mode.toLowerCase(Locale.ENGLISH)) {
 			"dependency" -> {
-
-				val groupId = parameters[GROUP_ID] ?: error("Parameter '$GROUP_ID' is required for $MODE: 'dependency'")
-				val artifactId = parameters[ARTIFACT_ID] ?: error("Parameter '$ARTIFACT_ID' is required for $MODE: 'dependency'")
-				val version = parameters[VERSION] ?: error("Parameter '$VERSION' is required for $MODE: 'dependency'")
 
 				val artifact = model.dependencies.firstOrNull { it.groupId == groupId && it.artifactId == artifactId } ?: return CheckResult(
 					status = CheckResult.Status.FAILED,
