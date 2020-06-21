@@ -22,11 +22,11 @@ class MavenCheck(
 
 		val model = mavenModelResolver.getModel(directory)
 
-		when (parameters.get(MODE)?.toLowerCase(Locale.ENGLISH)) {
+		when (parameters[MODE]?.toLowerCase(Locale.ENGLISH)) {
 			"dependency" -> {
 
-				val groupId = parameters.get(GROUP_ID) ?: error("Parameter '$GROUP_ID' is required for $MODE: 'dependency'")
-				val artifactId = parameters.get(ARTIFACT_ID) ?: error("Parameter '$ARTIFACT_ID' is required for $MODE: 'dependency'")
+				val groupId = parameters[GROUP_ID] ?: error("Parameter '$GROUP_ID' is required for $MODE: 'dependency'")
+				val artifactId = parameters[ARTIFACT_ID] ?: error("Parameter '$ARTIFACT_ID' is required for $MODE: 'dependency'")
 				val version = parameters[VERSION] ?: error("Parameter '$VERSION' is required for $MODE: 'dependency'")
 
 				val artifact = model.dependencies.firstOrNull { it.groupId == groupId && it.artifactId == artifactId } ?: return CheckResult(

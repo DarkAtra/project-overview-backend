@@ -20,7 +20,7 @@ projectoverview:
     allowed-origins: ~
   maven:
     temp-dir: ./maven-temp
-    executable: ~
+    executable: ${MAVEN_HOME}/bin/mvn.cmd
 
 ---
 spring:
@@ -29,5 +29,3 @@ spring:
 projectoverview:
   security:
     allowed-origins: http://localhost:3000
-  maven:
-    executable: ${MAVEN_HOME}/bin/mvn.cmd

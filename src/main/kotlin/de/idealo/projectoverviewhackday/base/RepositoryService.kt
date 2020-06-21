@@ -83,6 +83,10 @@ class RepositoryService(
 	}
 
 	private fun getCredentialProvider(repository: Repository): CredentialsProvider? {
+		if (repositoryServiceProperties.username == null) {
+			return null
+		}
+
 		return UsernamePasswordCredentialsProvider(repositoryServiceProperties.username, repositoryServiceProperties.password)
 	}
 }
