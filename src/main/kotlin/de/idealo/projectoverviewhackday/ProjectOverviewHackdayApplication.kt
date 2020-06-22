@@ -7,6 +7,7 @@ import de.idealo.projectoverviewhackday.base.model.CheckConfiguration
 import de.idealo.projectoverviewhackday.base.model.CheckToRepository
 import de.idealo.projectoverviewhackday.base.model.Repository
 import de.idealo.projectoverviewhackday.maven.MavenCheck
+import de.idealo.projectoverviewhackday.maven.MavenCheckMode
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
@@ -41,13 +42,33 @@ class ProjectOverviewHackdayApplication(
 
 		checkConfigurationAdapter.save(
 			CheckConfiguration(
+				name = "Spring Boot Web Parent Check",
+				type = "maven",
+				additionalProperties = mapOf(
+					MavenCheck.MODE to MavenCheckMode.PARENT.name,
+					MavenCheck.GROUP_ID to "org.springframework.boot",
+					MavenCheck.ARTIFACT_ID to "spring-boot-starter-parent",
+					MavenCheck.VERSION_RESOLVER to "url:https://repo1.maven.org/maven2"
+				)
+			)
+		)
+		checkConfigurationAdapter.save(
+			CheckConfiguration(
 				name = "Spring Boot Web Start Check",
 				type = "maven",
 				additionalProperties = mapOf(
-					MavenCheck.MODE to "dependency",
+					MavenCheck.MODE to MavenCheckMode.DEPENDENCY.name,
 					MavenCheck.GROUP_ID to "org.springframework.boot",
 					MavenCheck.ARTIFACT_ID to "spring-boot-starter-web",
 					MavenCheck.VERSION_RESOLVER to "url:https://repo1.maven.org/maven2"
+				)
+			)
+		)
+		checkToRepositoryAdapter.save(
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = "health-probes-issue",
+					checkId = "Spring Boot Web Parent Check"
 				)
 			)
 		)

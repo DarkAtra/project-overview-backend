@@ -44,10 +44,23 @@ class MavenCheck(
 					)
 				}
 			}
-			else -> CheckResult(
-				status = CheckResult.Status.SKIPPED,
-				message = "Invalid check parameters"
-			)
+			MavenCheckMode.PARENT -> {
+
+				if (model.parent.groupId != groupId && model.parent.artifactId != artifactId) {
+					return CheckResult(
+						status = CheckResult.Status.FAILED,
+						message = "Parent '$groupId:$artifactId' not found."
+					)
+				}
+
+				val wantedVersion = versionResolver.resolve(groupId, artifactId)
+				if (model.parent.version != wantedVersion) {
+					return CheckResult(
+						status = CheckResult.Status.FAILED,
+						message = "Parent '$groupId:$artifactId' found but version does not match. Wanted version '$wantedVersion' but was '${model.parent.version}'"
+					)
+				}
+			}
 		}
 
 		return CheckResult(
