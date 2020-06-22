@@ -6,7 +6,6 @@ import de.idealo.projectoverviewhackday.base.model.Parameter
 import de.idealo.projectoverviewhackday.base.model.RepositoryDirectory
 import org.springframework.stereotype.Component
 import java.nio.file.Path
-import java.util.Locale
 
 @Component
 @Check("maven")
@@ -18,26 +17,30 @@ class MavenCheck(
 		const val MODE: String = "mode"
 		const val GROUP_ID: String = "groupId"
 		const val ARTIFACT_ID: String = "artifactId"
-		const val VERSION: String = "version"
+		const val VERSION_RESOLVER: String = "versionResolver"
 	}
 
-	fun performCheck(@RepositoryDirectory directory: Path, @Parameter(MODE) mode: String, @Parameter groupId: String, @Parameter artifactId: String,
-	                 @Parameter version: String): CheckResult {
+	fun performCheck(@RepositoryDirectory directory: Path,
+					 @Parameter(MODE) mode: MavenCheckMode,
+					 @Parameter(GROUP_ID) groupId: String,
+					 @Parameter(ARTIFACT_ID) artifactId: String,
+					 @Parameter(VERSION_RESOLVER) versionResolver: VersionResolver): CheckResult {
 
 		val model = mavenModelResolver.getModel(directory)
 
-		when (mode.toLowerCase(Locale.ENGLISH)) {
-			"dependency" -> {
+		when (mode) {
+			MavenCheckMode.DEPENDENCY -> {
 
 				val artifact = model.dependencies.firstOrNull { it.groupId == groupId && it.artifactId == artifactId } ?: return CheckResult(
 					status = CheckResult.Status.FAILED,
-					message = "Dependency '$groupId:$artifactId:$version' not found."
+					message = "Dependency '$groupId:$artifactId' not found."
 				)
 
-				if (artifact.version != version) {
+				val wantedVersion = versionResolver.resolve(groupId, artifactId)
+				if (artifact.version != wantedVersion) {
 					return CheckResult(
 						status = CheckResult.Status.FAILED,
-						message = "Dependency '$groupId:$artifactId' found but version does not match. Wanted version '$version' but was '${artifact.version}'"
+						message = "Dependency '$groupId:$artifactId' found but version does not match. Wanted version '$wantedVersion' but was '${artifact.version}'"
 					)
 				}
 			}

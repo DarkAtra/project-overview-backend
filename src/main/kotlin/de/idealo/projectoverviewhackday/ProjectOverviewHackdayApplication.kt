@@ -47,7 +47,7 @@ class ProjectOverviewHackdayApplication(
 					MavenCheck.MODE to "dependency",
 					MavenCheck.GROUP_ID to "org.springframework.boot",
 					MavenCheck.ARTIFACT_ID to "spring-boot-starter-web",
-					MavenCheck.VERSION to "2.3.1.RELEASE"
+					MavenCheck.VERSION_RESOLVER to "url:https://repo1.maven.org/maven2"
 				)
 			)
 		)

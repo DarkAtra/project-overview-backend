@@ -99,6 +99,11 @@ class CheckService(
 			error("Found multiple methods with name 'performCheck' in class '$checkClass'.")
 		}
 
-		return performCheckMethods.first()
+		val performCheckMethod = performCheckMethods.first()
+		if (CheckResult::class.equals(performCheckMethod.returnType)) {
+			error("Found a 'performCheck' method with a wrong return type in class '$checkClass'.")
+		}
+
+		return performCheckMethod
 	}
 }

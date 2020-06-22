@@ -11,5 +11,6 @@ data class CheckConfiguration(
 
 	val type: String,
 
+	// TODO: allow storage of complex types?
 	val additionalProperties: Map<String, String>
 )

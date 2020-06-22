@@ -1,9 +1,7 @@
 package de.idealo.projectoverviewhackday.maven
 
-import de.idealo.projectoverviewhackday.base.model.Version
-
 class StaticVersionResolver(
-	private val version: Version
+	private val version: String
 ) : VersionResolver {
 
 	override fun resolve(groupId: String, artifactId: String) = version
