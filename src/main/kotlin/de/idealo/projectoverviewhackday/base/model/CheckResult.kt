@@ -1,6 +1,7 @@
 package de.idealo.projectoverviewhackday.base.model
 
 data class CheckResult(
+	var checkName: String? = null,
 	val status: Status,
 	val message: String
 ) {

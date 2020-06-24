@@ -40,6 +40,7 @@ class CheckController(
 		return checkService.performChecks(checksRequest.repositoryName)
 			.map { checkResult ->
 				CheckResponse(
+					checkName = checkResult.checkName!!,
 					status = CheckResponse.Status.valueOf(checkResult.status.name),
 					message = checkResult.message
 				)

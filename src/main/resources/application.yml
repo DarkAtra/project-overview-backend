@@ -20,7 +20,7 @@ projectoverview:
     allowed-origins: ~
   maven:
     temp-dir: ./maven-temp
-    executable: ${MAVEN_HOME}/bin/mvn.cmd
+    executable: ~
 
 ---
 spring:

@@ -14,11 +14,11 @@
 	<artifactId>project-overview-hackday</artifactId>
 	<version>0.0.1</version>
 	<name>project-overview-hackday</name>
-	<description>A tool to generate a dependency overview for specific git repositories.</description>
+	<description>A tool that allows you to perform checks on git repositories.</description>
 
 	<properties>
 		<kotlin.version>1.3.72</kotlin.version>
-		<spring-cloud.version>Hoxton.SR5</spring-cloud.version>
+		<spring-cloud.version>Hoxton.SR6</spring-cloud.version>
 	</properties>
 
 	<dependencies>

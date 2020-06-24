@@ -2,15 +2,9 @@ package de.idealo.projectoverviewhackday.base
 
 import de.idealo.projectoverviewhackday.base.model.CheckConfiguration
 import de.idealo.projectoverviewhackday.base.model.CheckResult
-import de.idealo.projectoverviewhackday.base.model.RepositoryDirectory
-import org.springframework.core.convert.ConversionException
-import org.springframework.core.convert.ConversionService
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Method
-import java.lang.reflect.Parameter
-import java.nio.file.Path
-import de.idealo.projectoverviewhackday.base.model.Parameter as ParameterAnnotation
 
 @Service
 class CheckService(
@@ -18,7 +12,7 @@ class CheckService(
 	private val checkConfigurationAdapter: CheckConfigurationAdapter,
 	private val checkToRepositoryAdapter: CheckToRepositoryAdapter,
 	private val repositoryService: RepositoryService,
-	private val conversionService: ConversionService
+	private val parameterValueResolverRegistry: ParameterValueResolverRegistry
 ) : LoggingAware() {
 
 	fun getCheckConfigurations(): List<CheckConfiguration> = checkConfigurationAdapter.findAll()
@@ -32,7 +26,7 @@ class CheckService(
 		return repositoryService.upsertAndGetLocalRepository(repository).use { git ->
 
 			val localRepositoryPath = repositoryService.getLocalRepositoryPath(repository)
-			checks.mapNotNull { checkConfiguration ->
+			checks.map { checkConfiguration ->
 				val check = checkBuilder.getCheck(
 					checkConfiguration = checkConfiguration
 				)
@@ -41,49 +35,22 @@ class CheckService(
 					val performCheckMethod = getPerformCheckMethod(check.javaClass)
 
 					val args = performCheckMethod.parameters.map { parameter ->
-						resolveParameterValue(parameter, localRepositoryPath, checkConfiguration.additionalProperties)
+						parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath)
 					}
 
-					performCheckMethod.invoke(check, *args.toTypedArray()) as CheckResult
+					val checkResult = performCheckMethod.invoke(check, *args.toTypedArray()) as CheckResult
+					checkResult.also {
+						it.checkName = checkConfiguration.name
+					}
 				} catch (e: IllegalStateException) {
 					log.error("Will not perform check '${checkConfiguration.name}' due to the following reason: ${e.message}", e)
-					null
+					CheckResult(
+						checkName = checkConfiguration.name,
+						status = CheckResult.Status.SKIPPED,
+						message = "This check was skipped."
+					)
 				}
 			}
-		}
-	}
-
-	private fun resolveParameterValue(parameter: Parameter, repositoryDirectory: Path, additionalProperties: Map<String, String>): Any? {
-
-		val parameterAnnotation: ParameterAnnotation? = parameter.getAnnotation(ParameterAnnotation::class.java)
-		val repositoryDirectoryAnnotation: RepositoryDirectory? = parameter.getAnnotation(RepositoryDirectory::class.java)
-
-		if (parameterAnnotation != null && repositoryDirectoryAnnotation != null) {
-			error("Found multiple check related annotations for Parameter '${parameter.name}'.")
-		}
-
-		when {
-			parameterAnnotation != null -> {
-				val parameterName = if (parameterAnnotation.name == "") parameter.name else parameterAnnotation.name
-				val required = parameterAnnotation.required
-				val parameterForName = additionalProperties[parameterName]
-
-				if (parameterForName == null && required) {
-					error("Found no value for required Parameter '${parameter.name}'.")
-				}
-
-				if (parameterForName != null && parameterForName.javaClass.isAssignableFrom(parameter.type)) {
-					return parameterForName
-				}
-
-				try {
-					return conversionService.convert(parameterForName, parameter.type)
-				} catch (e: ConversionException) {
-					throw IllegalStateException("Could not convert value for Parameter '${parameter.name}' from 'String' to '${parameter.type}'.", e)
-				}
-			}
-			repositoryDirectoryAnnotation != null -> return repositoryDirectory
-			else -> error("Found not check related annotations for Parameter '${parameter.name}'.")
 		}
 	}
 
