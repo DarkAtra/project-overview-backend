@@ -8,6 +8,8 @@ import de.idealo.projectoverviewhackday.base.model.CheckToRepository
 import de.idealo.projectoverviewhackday.base.model.Repository
 import de.idealo.projectoverviewhackday.maven.MavenCheck
 import de.idealo.projectoverviewhackday.maven.MavenCheckMode
+import de.idealo.projectoverviewhackday.regex.RegexCheck
+import de.idealo.projectoverviewhackday.regex.RegexCheckMode
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
@@ -40,7 +42,7 @@ class ProjectOverviewHackdayApplication(
 			)
 		)
 
-		checkConfigurationAdapter.save(
+		checkConfigurationAdapter.saveAll(listOf(
 			CheckConfiguration(
 				name = "Spring Boot Web Parent Check",
 				type = "maven",
@@ -50,9 +52,7 @@ class ProjectOverviewHackdayApplication(
 					MavenCheck.ARTIFACT_ID to "spring-boot-starter-parent",
 					MavenCheck.VERSION_RESOLVER to "url:https://repo1.maven.org/maven2"
 				)
-			)
-		)
-		checkConfigurationAdapter.save(
+			),
 			CheckConfiguration(
 				name = "Spring Boot Web Start Check",
 				type = "maven",
@@ -62,23 +62,36 @@ class ProjectOverviewHackdayApplication(
 					MavenCheck.ARTIFACT_ID to "spring-boot-starter-web",
 					MavenCheck.VERSION_RESOLVER to "url:https://repo1.maven.org/maven2"
 				)
+			),
+			CheckConfiguration(
+				name = "Regex Check",
+				type = "regex",
+				additionalProperties = mapOf(
+					RegexCheck.MODE to RegexCheckMode.NORMAL.name,
+					RegexCheck.FILE to ".gitignore",
+					RegexCheck.PATTERN to "(?s)HELP\\.md.*"
+				)
 			)
-		)
-		checkToRepositoryAdapter.save(
+		))
+		checkToRepositoryAdapter.saveAll(listOf(
 			CheckToRepository(
 				id = CheckToRepository.CheckToRepositoryId(
 					repositoryId = "health-probes-issue",
 					checkId = "Spring Boot Web Parent Check"
 				)
-			)
-		)
-		checkToRepositoryAdapter.save(
+			),
 			CheckToRepository(
 				id = CheckToRepository.CheckToRepositoryId(
 					repositoryId = "health-probes-issue",
 					checkId = "Spring Boot Web Start Check"
 				)
+			),
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = "health-probes-issue",
+					checkId = "Regex Check"
+				)
 			)
-		)
+		))
 	}
 }

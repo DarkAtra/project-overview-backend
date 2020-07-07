@@ -23,7 +23,7 @@ class CheckService(
 			.mapNotNull { checkConfigurationAdapter.findById(it.id.checkId).orElse(null) }
 
 		val repository = repositoryService.getRepository(repositoryName)
-		return repositoryService.upsertAndGetLocalRepository(repository).use { git ->
+		return repositoryService.upsertAndGetLocalRepository(repository).use { _ ->
 
 			val localRepositoryPath = repositoryService.getLocalRepositoryPath(repository)
 			checks.map { checkConfiguration ->
@@ -31,24 +31,34 @@ class CheckService(
 					checkConfiguration = checkConfiguration
 				)
 
-				try {
+				val (performCheckMethod, args) = try {
 					val performCheckMethod = getPerformCheckMethod(check.javaClass)
 
 					val args = performCheckMethod.parameters.map { parameter ->
 						parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath)
 					}
 
-					val checkResult = performCheckMethod.invoke(check, *args.toTypedArray()) as CheckResult
-					checkResult.also {
-						it.checkName = checkConfiguration.name
-					}
+					Pair(performCheckMethod, args)
 				} catch (e: IllegalStateException) {
 					log.error("Will not perform check '${checkConfiguration.name}' due to the following reason: ${e.message}", e)
-					CheckResult(
+					return@map CheckResult(
 						checkName = checkConfiguration.name,
 						status = CheckResult.Status.SKIPPED,
 						message = "This check was skipped."
 					)
+				}
+
+				try {
+					performCheckMethod.invoke(check, *args.toTypedArray()) as CheckResult
+				} catch (e: Exception) {
+					log.error("Exception performing check '${checkConfiguration.name}':", e)
+					return@map CheckResult(
+						checkName = checkConfiguration.name,
+						status = CheckResult.Status.ABORTED,
+						message = "This check was aborted. This is most likely due to an exception."
+					)
+				}.also { checkResult ->
+					checkResult.checkName = checkConfiguration.name
 				}
 			}
 		}
