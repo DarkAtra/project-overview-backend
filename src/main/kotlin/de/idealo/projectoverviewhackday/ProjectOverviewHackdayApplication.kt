@@ -34,13 +34,23 @@ class ProjectOverviewHackdayApplication(
 	@PostConstruct
 	fun post() {
 
-		repositoryAdapter.save(
+		repositoryAdapter.saveAll(listOf(
 			Repository(
 				name = "health-probes-issue",
 				browseUrl = "https://github.com/DarkAtra/health-probes-issue",
 				cloneUrl = "https://github.com/DarkAtra/health-probes-issue.git"
+			),
+			Repository(
+				name = "jsr380-kotlin-issue",
+				browseUrl = "https://github.com/DarkAtra/jsr380-kotlin-issue",
+				cloneUrl = "https://github.com/DarkAtra/jsr380-kotlin-issue.git"
+			),
+			Repository(
+				name = "project-overview-hackday",
+				browseUrl = "https://github.com/DarkAtra/project-overview-hackday",
+				cloneUrl = "https://github.com/DarkAtra/project-overview-hackday.git"
 			)
-		)
+		))
 
 		checkConfigurationAdapter.saveAll(listOf(
 			CheckConfiguration(
@@ -73,6 +83,7 @@ class ProjectOverviewHackdayApplication(
 				)
 			)
 		))
+
 		checkToRepositoryAdapter.saveAll(listOf(
 			CheckToRepository(
 				id = CheckToRepository.CheckToRepositoryId(
@@ -90,6 +101,30 @@ class ProjectOverviewHackdayApplication(
 				id = CheckToRepository.CheckToRepositoryId(
 					repositoryId = "health-probes-issue",
 					checkId = "Regex Check"
+				)
+			),
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = "jsr380-kotlin-issue",
+					checkId = "Spring Boot Web Parent Check"
+				)
+			),
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = "jsr380-kotlin-issue",
+					checkId = "Spring Boot Web Start Check"
+				)
+			),
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = "project-overview-hackday",
+					checkId = "Spring Boot Web Parent Check"
+				)
+			),
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = "project-overview-hackday",
+					checkId = "Spring Boot Web Start Check"
 				)
 			)
 		))

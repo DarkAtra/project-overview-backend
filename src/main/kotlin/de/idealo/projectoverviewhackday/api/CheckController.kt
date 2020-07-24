@@ -25,7 +25,7 @@ class CheckController(
 ) {
 
 	@GetMapping
-	fun getChecks(): List<CheckConfigurationResponse> {
+	fun getCheckConfigurations(): List<CheckConfigurationResponse> {
 
 		return checkService.getCheckConfigurations()
 			.map { checkConfiguration ->
