@@ -2,9 +2,13 @@ package de.idealo.projectoverviewhackday.base
 
 import de.idealo.projectoverviewhackday.base.model.CheckConfiguration
 import de.idealo.projectoverviewhackday.base.model.CheckResult
+import de.idealo.projectoverviewhackday.base.model.CheckToRepository
+import de.idealo.projectoverviewhackday.base.model.Repository
 import org.springframework.stereotype.Service
 import org.springframework.util.ReflectionUtils
 import java.lang.reflect.Method
+import java.nio.file.Path
+import java.time.Instant
 
 @Service
 class CheckService(
@@ -16,6 +20,14 @@ class CheckService(
 ) : LoggingAware() {
 
 	fun getCheckConfigurations(): List<CheckConfiguration> = checkConfigurationAdapter.findAll()
+
+	fun getCheckResults(checkName: String, repositoryName: String): List<CheckResult> {
+
+		return checkToRepositoryAdapter.findById(CheckToRepository.CheckToRepositoryId(
+			checkId = checkName,
+			repositoryId = repositoryName
+		)).map<List<CheckResult>> { it.checkResults }.orElse(emptyList())
+	}
 
 	fun performChecks(repositoryName: String): List<CheckResult> {
 
@@ -31,36 +43,63 @@ class CheckService(
 					checkConfiguration = checkConfiguration
 				)
 
-				val (performCheckMethod, args) = try {
-					val performCheckMethod = getPerformCheckMethod(check.javaClass)
-
-					val args = performCheckMethod.parameters.map { parameter ->
-						parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath)
+				getCheckResult(checkConfiguration, check, localRepositoryPath)
+					.let { checkResult ->
+						when (checkResult.checkName == checkConfiguration.name) {
+							true -> checkResult
+							false -> CheckResult(
+								checkName = checkConfiguration.name,
+								status = CheckResult.Status.ABORTED,
+								message = "CheckResult's checkName does not match the checkConfiguration's name. This check was aborted."
+							)
+						}
 					}
-
-					Pair(performCheckMethod, args)
-				} catch (e: IllegalStateException) {
-					log.error("Will not perform check '${checkConfiguration.name}' due to the following reason: ${e.message}", e)
-					return@map CheckResult(
-						checkName = checkConfiguration.name,
-						status = CheckResult.Status.SKIPPED,
-						message = "This check was skipped."
-					)
-				}
-
-				try {
-					performCheckMethod.invoke(check, *args.toTypedArray()) as CheckResult
-				} catch (e: Exception) {
-					log.error("Exception performing check '${checkConfiguration.name}':", e)
-					return@map CheckResult(
-						checkName = checkConfiguration.name,
-						status = CheckResult.Status.ABORTED,
-						message = "This check was aborted. This is most likely due to an exception."
-					)
-				}.also { checkResult ->
-					checkResult.checkName = checkConfiguration.name
-				}
+					.also { checkResult ->
+						persistCheckResult(repository, checkConfiguration, checkResult)
+					}
 			}
+		}
+	}
+
+	private fun getCheckResult(checkConfiguration: CheckConfiguration, check: Any, localRepositoryPath: Path): CheckResult {
+
+		val (performCheckMethod, args) = try {
+
+			val performCheckMethod = getPerformCheckMethod(check.javaClass)
+			val args = performCheckMethod.parameters.map { parameter ->
+				parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath)
+			}
+
+			Pair(performCheckMethod, args)
+		} catch (e: IllegalStateException) {
+			log.error("Will not perform check '${checkConfiguration.name}' due to the following reason: ${e.message}", e)
+			return CheckResult(
+				checkName = checkConfiguration.name,
+				status = CheckResult.Status.SKIPPED,
+				message = "This check was skipped."
+			)
+		}
+
+		return try {
+			performCheckMethod.invoke(check, *args.toTypedArray()) as CheckResult
+		} catch (e: Exception) {
+			log.error("Exception performing check '${checkConfiguration.name}'.", e)
+			CheckResult(
+				checkName = checkConfiguration.name,
+				status = CheckResult.Status.ABORTED,
+				message = "This check was aborted. This is most likely due to an exception."
+			)
+		}
+	}
+
+	private fun persistCheckResult(repository: Repository, checkConfiguration: CheckConfiguration, checkResult: CheckResult) {
+
+		checkToRepositoryAdapter.findById(CheckToRepository.CheckToRepositoryId(
+			checkId = checkConfiguration.name,
+			repositoryId = repository.name
+		)).ifPresent { checkToRepository ->
+			checkToRepository.checkResults.add(checkResult.also { it.createdDate = Instant.now() })
+			checkToRepositoryAdapter.save(checkToRepository)
 		}
 	}
 
@@ -77,7 +116,7 @@ class CheckService(
 		}
 
 		val performCheckMethod = performCheckMethods.first()
-		if (CheckResult::class.equals(performCheckMethod.returnType)) {
+		if (CheckResult::class == performCheckMethod.returnType) {
 			error("Found a 'performCheck' method with a wrong return type in class '$checkClass'.")
 		}
 

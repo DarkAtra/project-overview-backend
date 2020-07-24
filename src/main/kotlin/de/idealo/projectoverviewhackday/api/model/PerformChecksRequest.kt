@@ -1,5 +1,5 @@
 package de.idealo.projectoverviewhackday.api.model
 
-data class ChecksRequest(
+data class PerformChecksRequest(
 	val repositoryName: String
 )

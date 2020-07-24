@@ -1,6 +1,7 @@
 package de.idealo.projectoverviewhackday.regex
 
 import de.idealo.projectoverviewhackday.base.model.Check
+import de.idealo.projectoverviewhackday.base.model.CheckName
 import de.idealo.projectoverviewhackday.base.model.CheckResult
 import de.idealo.projectoverviewhackday.base.model.Parameter
 import de.idealo.projectoverviewhackday.base.model.RepositoryDirectory
@@ -20,14 +21,16 @@ class RegexCheck {
 	}
 
 	fun performCheck(@RepositoryDirectory directory: Path,
-					 @Parameter(MODE) mode: RegexCheckMode,
-					 @Parameter(FILE) file: Path,
-					 @Parameter(PATTERN) pattern: Pattern): CheckResult {
+	                 @CheckName checkName: String,
+	                 @Parameter(MODE) mode: RegexCheckMode,
+	                 @Parameter(FILE) file: Path,
+	                 @Parameter(PATTERN) pattern: Pattern): CheckResult {
 
 		val target = directory.resolve(file).toRealPath()
 		val fileIsInRepositoryDirectory = target.startsWith(directory.toRealPath())
 		if (!fileIsInRepositoryDirectory) {
 			return CheckResult(
+				checkName = checkName,
 				status = CheckResult.Status.FAILED,
 				message = "File '$file' is not inside of folder '$directory'."
 			)
@@ -38,12 +41,14 @@ class RegexCheck {
 
 		if (!matcher.matches()) {
 			return CheckResult(
+				checkName = checkName,
 				status = CheckResult.Status.FAILED,
 				message = "Regex did not match."
 			)
 		}
 
 		return CheckResult(
+			checkName = checkName,
 			status = CheckResult.Status.SUCCESSFUL,
 			message = "Check passed"
 		)
