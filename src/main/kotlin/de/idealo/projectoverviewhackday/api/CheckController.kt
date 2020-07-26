@@ -30,7 +30,9 @@ class CheckController(
 		return checkService.getCheckConfigurations()
 			.map { checkConfiguration ->
 				CheckConfigurationResponse(
-					name = checkConfiguration.name
+					name = checkConfiguration.name,
+					type = checkConfiguration.type,
+					additionalProperties = checkConfiguration.additionalProperties
 				)
 			}
 	}
