@@ -1,28 +1,40 @@
 spring:
   main:
     banner-mode: off
+  cache:
+    type: simple
+
+server:
+  port: 8080
+  compression:
+    enabled: true
 
 management:
+  server:
+    port: 8081
   endpoints:
     enabled-by-default: false
   endpoint:
     health:
       enabled: true
+      probes:
+        enabled: true
     info:
       enabled: true
 
-services:
+projectoverview:
+  security:
+    allowed-origins: ~
   repository:
-    project: ~
-    checks: []
+    dir: ./repositories
+  maven:
+    temp-dir: ./maven-temp
+    executable: ~
 
-adapters:
-  bit-bucket:
-    url: ~
-    token: ~
-  gitea:
-    url: ~
-    token: ~
+---
+spring:
+  profiles: dev
 
-security:
-  allowed-origins: ~
+projectoverview:
+  security:
+    allowed-origins: http://localhost:3000

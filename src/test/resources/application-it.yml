@@ -1,12 +1,3 @@
-spring:
-  profiles:
-    include: gitea
-
-services:
-  repository:
-    project: project
-
-adapters:
-  gitea:
-    url: http://localhost:8080
-    token: test
+projectoverview:
+  security:
+    allowed-origins: http://localhost:8080
