@@ -51,7 +51,9 @@ class CheckService(
 			.mapNotNull { checkConfigurationAdapter.findById(it.id.checkId).orElse(null) }
 
 		val repository = repositoryService.getRepository(repositoryName)
-		return repositoryService.upsertAndGetLocalRepository(repository).use { _ ->
+
+		val upsertRepositoryResult = repositoryService.upsertAndGetLocalRepository(repository)
+		return upsertRepositoryResult.git.use {
 
 			val localRepositoryPath = repositoryService.getLocalRepositoryPath(repository)
 			checks.map { checkConfiguration ->
@@ -59,7 +61,7 @@ class CheckService(
 					checkConfiguration = checkConfiguration
 				)
 
-				getCheckResult(checkConfiguration, check, localRepositoryPath)
+				getCheckResult(checkConfiguration, check, localRepositoryPath, upsertRepositoryResult.hadUpdates)
 					.let { checkResult ->
 						when (checkResult.checkName == checkConfiguration.name) {
 							true -> checkResult
@@ -77,13 +79,13 @@ class CheckService(
 		}
 	}
 
-	private fun getCheckResult(checkConfiguration: CheckConfiguration, check: Any, localRepositoryPath: Path): CheckResult {
+	private fun getCheckResult(checkConfiguration: CheckConfiguration, check: Any, localRepositoryPath: Path, forceRefreshCache: Boolean): CheckResult {
 
 		val (performCheckMethod, args) = try {
 
 			val performCheckMethod = getPerformCheckMethod(check.javaClass)
 			val args = performCheckMethod.parameters.map { parameter ->
-				parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath)
+				parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath, forceRefreshCache)
 			}
 
 			Pair(performCheckMethod, args)

@@ -3,6 +3,7 @@ package de.darkatra.projectoverview.maven
 import de.darkatra.projectoverview.base.model.Check
 import de.darkatra.projectoverview.base.model.CheckName
 import de.darkatra.projectoverview.base.model.CheckResult
+import de.darkatra.projectoverview.base.model.ForceRefreshCache
 import de.darkatra.projectoverview.base.model.Parameter
 import de.darkatra.projectoverview.base.model.RepositoryDirectory
 import org.springframework.stereotype.Component
@@ -26,7 +27,12 @@ class MavenCheck(
 	                 @Parameter(MODE) mode: MavenCheckMode,
 	                 @Parameter(GROUP_ID) groupId: String,
 	                 @Parameter(ARTIFACT_ID) artifactId: String,
-	                 @Parameter(VERSION_RESOLVER) versionResolver: VersionResolver): CheckResult {
+	                 @Parameter(VERSION_RESOLVER) versionResolver: VersionResolver,
+	                 @ForceRefreshCache forceRefreshCache: Boolean): CheckResult {
+
+		if (forceRefreshCache) {
+			mavenModelResolver.evictCache(directory)
+		}
 
 		val model = mavenModelResolver.getModel(directory)
 

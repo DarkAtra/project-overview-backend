@@ -3,6 +3,7 @@ package de.darkatra.projectoverview.base
 import de.darkatra.projectoverview.base.model.ConflictException
 import de.darkatra.projectoverview.base.model.NotFoundException
 import de.darkatra.projectoverview.base.model.Repository
+import de.darkatra.projectoverview.base.model.UpsertRepositoryResult
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.GitCommand
 import org.eclipse.jgit.api.TransportCommand
@@ -52,21 +53,27 @@ class RepositoryService(
 		repositoryAdapter.deleteById(name)
 	}
 
-	fun upsertAndGetLocalRepository(repository: Repository): Git {
+	fun upsertAndGetLocalRepository(repository: Repository): UpsertRepositoryResult {
 
 		val localRepositoryPath = getLocalRepositoryPath(repository).toFile()
 		return if (!localRepositoryPath.exists()) {
-			Git.cloneRepository()
-				.setURI(repository.cloneUrl)
-				.setDirectory(localRepositoryPath)
-				.also { configureCredentialsProvider(it, repository) }
-				.call()
+			UpsertRepositoryResult(
+				git = Git.cloneRepository()
+					.setURI(repository.cloneUrl)
+					.setDirectory(localRepositoryPath)
+					.also { configureCredentialsProvider(it, repository) }
+					.call(),
+				hadUpdates = true
+			)
 		} else {
 			Git.open(localRepositoryPath)
-				.also { git ->
-					git.pull()
-						.also { configureCredentialsProvider(it, repository) }
-						.call()
+				.let { git ->
+					UpsertRepositoryResult(
+						git = git,
+						hadUpdates = git.pull()
+							.also { configureCredentialsProvider(it, repository) }
+							.call().fetchResult.trackingRefUpdates.isNotEmpty()
+					)
 				}
 		}
 	}

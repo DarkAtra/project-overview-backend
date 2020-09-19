@@ -26,7 +26,8 @@ class MavenModelResolver(
 		val effectivePomPath = workingDirectory.resolve("effective-pom.xml")
 
 		val process = processBuilder
-			.command(mavenModelResolverProperties.executable.toString(), "help:effective-pom", "--file=${pomPath.toAbsolutePath()}", "-Doutput=${effectivePomPath.toAbsolutePath()}")
+			.command(mavenModelResolverProperties.executable.toString(), "help:effective-pom", "--file=${pomPath.toAbsolutePath()}",
+				"-Doutput=${effectivePomPath.toAbsolutePath()}")
 			.directory(workingDirectory.toFile())
 			.also {
 				val logFile = workingDirectory.resolve("mvn.log").toFile()
@@ -44,10 +45,15 @@ class MavenModelResolver(
 		return reader.read(effectivePomPath.toFile().reader())
 	}
 
+	@CacheEvict(cacheNames = ["maven_model"], key = "#directory.toAbsolutePath().toString()")
+	fun evictCache(directory: Path) {
+		log.info("Flushed 'maven_model' cache for entry '${directory.toAbsolutePath()}': ${Instant.now()}")
+	}
+
 	@CacheEvict(cacheNames = ["maven_model"], allEntries = true)
 	@Scheduled(fixedDelay = 5 * 60 * 1000, initialDelay = 5 * 60 * 1000)
 	fun evictCache() {
-		log.info("Flushed 'maven_model' cache: ${Instant.now()}")
+		log.info("Flushed all entries in 'maven_model' cache: ${Instant.now()}")
 	}
 
 	private fun createAndGetTempDir(directory: Path): Path {
