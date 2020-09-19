@@ -40,15 +40,22 @@ class RepositoryController(
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	fun createRepository(@Valid @RequestBody repositoryCreateRequest: RepositoryCreateRequest) {
+	fun createRepository(@Valid @RequestBody repositoryCreateRequest: RepositoryCreateRequest): RepositoryResponse {
 
-		repositoryService.createRepository(
+		val savedRepository = repositoryService.createRepository(
 			Repository(
 				name = repositoryCreateRequest.name,
 				browseUrl = repositoryCreateRequest.browseUrl,
 				cloneUrl = repositoryCreateRequest.cloneUrl,
-				checks = repositoryCreateRequest.checks
+				checks = emptyList()
 			)
+		)
+
+		return RepositoryResponse(
+			name = savedRepository.name,
+			browseUrl = savedRepository.browseUrl,
+			cloneUrl = savedRepository.cloneUrl,
+			checks = savedRepository.checks
 		)
 	}
 

@@ -1,9 +1,15 @@
 package de.darkatra.projectoverview.api.model
 
-// TODO: validation
+import org.hibernate.validator.constraints.URL
+import javax.validation.constraints.NotBlank
+
 data class RepositoryCreateRequest(
+	@field:NotBlank
 	val name: String,
+	@field:NotBlank
+	@field:URL
 	val browseUrl: String,
-	val cloneUrl: String,
-	val checks: List<String>
+	@field:NotBlank
+	@field:URL
+	val cloneUrl: String
 )

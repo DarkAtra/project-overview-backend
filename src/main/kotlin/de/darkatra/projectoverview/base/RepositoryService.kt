@@ -34,13 +34,13 @@ class RepositoryService(
 			}
 	}
 
-	fun createRepository(repository: Repository) {
+	fun createRepository(repository: Repository): Repository {
 
 		if (repositoryAdapter.existsById(repository.name)) {
 			throw ConflictException("Repository with name '${repository.name}' already exists.")
 		}
 
-		repositoryAdapter.save(repository)
+		return repositoryAdapter.save(repository)
 	}
 
 	fun deleteRepository(name: String) {

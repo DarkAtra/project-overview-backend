@@ -46,9 +46,9 @@ class ProjectOverviewApplication(
 				cloneUrl = "https://github.com/DarkAtra/jsr380-kotlin-issue.git"
 			),
 			Repository(
-				name = "project-overview-hackday",
-				browseUrl = "https://github.com/DarkAtra/project-overview-hackday",
-				cloneUrl = "https://github.com/DarkAtra/project-overview-hackday.git"
+				name = "project-overview-backend",
+				browseUrl = "https://github.com/DarkAtra/project-overview-backend",
+				cloneUrl = "https://github.com/DarkAtra/project-overview-backend.git"
 			)
 		))
 
@@ -117,13 +117,13 @@ class ProjectOverviewApplication(
 			),
 			CheckToRepository(
 				id = CheckToRepository.CheckToRepositoryId(
-					repositoryId = "project-overview-hackday",
+					repositoryId = "project-overview-backend",
 					checkId = "Spring Boot Web Parent Check"
 				)
 			),
 			CheckToRepository(
 				id = CheckToRepository.CheckToRepositoryId(
-					repositoryId = "project-overview-hackday",
+					repositoryId = "project-overview-backend",
 					checkId = "Spring Boot Web Start Check"
 				)
 			)

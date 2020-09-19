@@ -2,7 +2,7 @@ package de.darkatra.projectoverview.api.model
 
 import javax.validation.constraints.NotBlank
 
-data class RepositoryDeleteRequest(
+data class CheckToRepositoryLinkRequest(
 	@field:NotBlank
-	val name: String
+	val repositoryName: String
 )

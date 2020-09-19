@@ -1,6 +1,6 @@
 package de.darkatra.projectoverview.api.model
 
-data class CheckResponse(
+data class CheckResultResponse(
 	val checkName: String,
 	val status: Status,
 	val message: String

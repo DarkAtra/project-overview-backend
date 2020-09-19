@@ -21,6 +21,22 @@ class CheckService(
 
 	fun getCheckConfigurations(): List<CheckConfiguration> = checkConfigurationAdapter.findAll()
 
+	fun upsertCheckConfiguration(checkConfiguration: CheckConfiguration): CheckConfiguration {
+
+		return checkConfigurationAdapter.save(checkConfiguration)
+	}
+
+	fun linkCheckConfigurationWithRepository(checkName: String, repositoryName: String) {
+		checkToRepositoryAdapter.save(
+			CheckToRepository(
+				id = CheckToRepository.CheckToRepositoryId(
+					repositoryId = repositoryName,
+					checkId = checkName
+				)
+			)
+		)
+	}
+
 	fun getCheckResults(checkName: String, repositoryName: String): List<CheckResult> {
 
 		return checkToRepositoryAdapter.findById(CheckToRepository.CheckToRepositoryId(
@@ -98,7 +114,7 @@ class CheckService(
 			checkId = checkConfiguration.name,
 			repositoryId = repository.name
 		)).ifPresent { checkToRepository ->
-			checkToRepository.checkResults.add(checkResult.also { it.createdDate = Instant.now() })
+			checkToRepository.checkResults.add(checkResult.also { it.created = Instant.now() })
 			checkToRepositoryAdapter.save(checkToRepository)
 		}
 	}
