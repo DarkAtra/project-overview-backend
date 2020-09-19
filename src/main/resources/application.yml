@@ -4,20 +4,29 @@ spring:
   cache:
     type: simple
 
+server:
+  port: 8080
+  compression:
+    enabled: true
+
 management:
+  server:
+    port: 8081
   endpoints:
     enabled-by-default: false
   endpoint:
     health:
       enabled: true
+      probes:
+        enabled: true
     info:
       enabled: true
 
 projectoverview:
-  repository:
-    dir: ./repositories
   security:
     allowed-origins: ~
+  repository:
+    dir: ./repositories
   maven:
     temp-dir: ./maven-temp
     executable: ~

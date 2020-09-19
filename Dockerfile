@@ -10,7 +10,7 @@ RUN addgroup --system --gid 101 projectoverview \
 	&& adduser --system --disabled-login --ingroup projectoverview --no-create-home --home /nonexistent --gecos "projectoverview user" --shell /bin/false --uid 101 projectoverview
 
 WORKDIR /app
-COPY --from=build --chown=projectoverview:projectoverview /app/target/project-overview-hackday.jar project-overview-hackday.jar
+COPY --from=build --chown=projectoverview:projectoverview /app/target/project-overview-backend.jar project-overview-backend.jar
 
 USER 101
-ENTRYPOINT ["java","-jar","project-overview-hackday.jar"]
+ENTRYPOINT ["java","-jar","project-overview-backend.jar"]
