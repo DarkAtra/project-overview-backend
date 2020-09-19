@@ -7,5 +7,5 @@ import java.nio.file.Path
 interface ParameterValueResolver<A : Annotation> {
 
 	// TODO: introduce a new exception for errors during parameter value resolution?
-	fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path, forceRefreshCache: Boolean): Any?
+	fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path): Any?
 }

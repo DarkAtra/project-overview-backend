@@ -13,7 +13,7 @@ class ParameterAnnotationParameterValueResolver(
 	private val conversionService: ConversionService
 ) : ParameterValueResolver<ParameterAnnotation> {
 
-	override fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path, forceRefreshCache: Boolean): Any? {
+	override fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path): Any? {
 
 		val parameterAnnotation = parameter.getAnnotation(ParameterAnnotation::class.java)
 

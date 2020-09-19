@@ -55,6 +55,9 @@ class CheckService(
 		val upsertRepositoryResult = repositoryService.upsertAndGetLocalRepository(repository)
 		return upsertRepositoryResult.git.use {
 
+			// TODO: invalidate caches for each check before running the checks
+			// upsertRepositoryResult.hadUpdates
+
 			val localRepositoryPath = repositoryService.getLocalRepositoryPath(repository)
 			checks.map { checkConfiguration ->
 				val check = checkBuilder.getCheck(
@@ -85,7 +88,7 @@ class CheckService(
 
 			val performCheckMethod = getPerformCheckMethod(check.javaClass)
 			val args = performCheckMethod.parameters.map { parameter ->
-				parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath, forceRefreshCache)
+				parameterValueResolverRegistry.resolve(parameter, checkConfiguration, localRepositoryPath)
 			}
 
 			Pair(performCheckMethod, args)

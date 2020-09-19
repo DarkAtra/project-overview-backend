@@ -9,7 +9,7 @@ import java.nio.file.Path
 @Component
 class CheckNameParameterValueResolver : ParameterValueResolver<CheckName> {
 
-	override fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path, forceRefreshCache: Boolean): Any {
+	override fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path): Any {
 		return checkConfiguration.name
 	}
 }

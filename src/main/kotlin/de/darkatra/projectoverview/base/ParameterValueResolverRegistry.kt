@@ -24,7 +24,7 @@ class ParameterValueResolverRegistry(
 		}
 	}
 
-	fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path, forceRefreshCache: Boolean): Any? {
+	fun resolve(parameter: Parameter, checkConfiguration: CheckConfiguration, localRepositoryPath: Path): Any? {
 
 		val parameterResolvers = parameter.annotations.mapNotNull { getParameterValueResolver(it) }
 
@@ -33,7 +33,7 @@ class ParameterValueResolverRegistry(
 			parameterResolvers.isEmpty() -> error("Found no ParameterValueResolvers for Parameter '${parameter.name}'.")
 		}
 
-		return parameterResolvers.first().resolve(parameter, checkConfiguration, localRepositoryPath, forceRefreshCache)
+		return parameterResolvers.first().resolve(parameter, checkConfiguration, localRepositoryPath)
 	}
 
 	// TODO: what should happen when multiple ParameterValueResolvers exist for the same annotation
