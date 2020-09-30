@@ -64,7 +64,7 @@ class CheckService(
 					checkConfiguration = checkConfiguration
 				)
 
-				getCheckResult(checkConfiguration, check, localRepositoryPath, upsertRepositoryResult.hadUpdates)
+				getCheckResult(checkConfiguration, check, localRepositoryPath)
 					.let { checkResult ->
 						when (checkResult.checkName == checkConfiguration.name) {
 							true -> checkResult
@@ -82,7 +82,7 @@ class CheckService(
 		}
 	}
 
-	private fun getCheckResult(checkConfiguration: CheckConfiguration, check: Any, localRepositoryPath: Path, forceRefreshCache: Boolean): CheckResult {
+	private fun getCheckResult(checkConfiguration: CheckConfiguration, check: Any, localRepositoryPath: Path): CheckResult {
 
 		val (performCheckMethod, args) = try {
 
