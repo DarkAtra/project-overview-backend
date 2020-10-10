@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct
 
 @EnableCaching
 @EnableScheduling
-@SpringBootApplication
+@SpringBootApplication(proxyBeanMethods = false)
 class ProjectOverviewApplication(
 	private val checkConfigurationAdapter: CheckConfigurationAdapter,
 	private val checkToRepositoryAdapter: CheckToRepositoryAdapter,
