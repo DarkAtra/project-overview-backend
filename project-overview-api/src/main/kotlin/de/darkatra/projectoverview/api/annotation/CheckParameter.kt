@@ -2,7 +2,7 @@ package de.darkatra.projectoverview.api.annotation
 
 
 /**
- * @property name the name of the parameter to inject. if not specified, **[the parameter name][java.lang.reflect.Parameter.name]** will be used
+ * @property name the name of the parameter to inject. if not specified, [the parameter name][java.lang.reflect.Parameter.name] will be used
  * @property required whether the parameter is required or not
  */
 @MustBeDocumented

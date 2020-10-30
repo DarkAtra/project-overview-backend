@@ -6,6 +6,7 @@ import java.util.Properties
 data class Plugin(
 	val applicationContext: AbstractApplicationContext,
 	val properties: Properties,
+	val packageName: String,
 	val name: String,
 	val author: String
 )
