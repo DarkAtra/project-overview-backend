@@ -15,13 +15,24 @@ import de.darkatra.projectoverview.api.annotation.Plugin as PluginAnnotation
 
 @Component
 class PluginManager(
-	private val applicationContext: ApplicationContext
+	private val applicationContext: ApplicationContext,
+	private val argumentResolverRegistry: ArgumentResolverRegistry
 ) : LoggingAware(), DisposableBean {
 
 	private val plugins: MutableList<Plugin> = mutableListOf()
 
 	override fun destroy() {
 		plugins.toList().forEach { plugin -> unload(plugin) }
+	}
+
+	fun getInvokablePluginTarget(pluginName: String): InvokablePluginTarget? {
+		return plugins.find { plugin -> plugin.name == pluginName }
+			?.let { plugin ->
+				InvokablePluginTarget(
+					plugin = plugin,
+					argumentResolverRegistry = argumentResolverRegistry
+				)
+			}
 	}
 
 	fun load(pluginUrl: URL): Plugin {
@@ -65,6 +76,8 @@ class PluginManager(
 
 		val pluginName = annotationAttributes["name"].toString()
 		val pluginAuthor = annotationAttributes["author"].toString()
+
+		pluginContext.displayName = "'$pluginName' by '$pluginAuthor' - ${pluginBeanDefinition.beanClassName}"
 
 		log.info("Loading plugin '$pluginName' maintained by '$pluginAuthor' from url: '${pluginUrl.toExternalForm()}'")
 		pluginContext.refresh()

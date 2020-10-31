@@ -1,8 +1,6 @@
 package de.darkatra.projectoverview
 
-import de.darkatra.projectoverview.context.ArgumentResolverRegistry
 import de.darkatra.projectoverview.context.CheckContext
-import de.darkatra.projectoverview.context.InvokablePluginTarget
 import de.darkatra.projectoverview.context.PluginManager
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -12,8 +10,7 @@ import javax.annotation.PostConstruct
 
 @SpringBootApplication(proxyBeanMethods = false)
 class ProjectOverviewApplication(
-	private val pluginManager: PluginManager,
-	private val argumentResolverRegistry: ArgumentResolverRegistry
+	private val pluginManager: PluginManager
 ) {
 	companion object {
 		@JvmStatic
@@ -25,13 +22,13 @@ class ProjectOverviewApplication(
 	@PostConstruct
 	fun post() {
 
-		val plugin = pluginManager.load(Path.of("C:/Users/DarkAtra/git/project-overview-plugin-maven/target/project-overview-plugin-maven-1.0-SNAPSHOT.jar").toUri().normalize().toURL())
+		pluginManager.load(Path.of("C:/Users/DarkAtra/git/project-overview-plugin-maven/target/project-overview-plugin-maven-1.0-SNAPSHOT.jar").toUri().normalize().toURL())
 
 		val checkContext = CheckContext(
 			checkName = "user supplied name for the check",
 			parameters = LinkedCaseInsensitiveMap()
 		)
 
-		InvokablePluginTarget(plugin, argumentResolverRegistry).performCheck("maven", checkContext)
+		pluginManager.getInvokablePluginTarget("maven")?.performCheck("maven", checkContext)
 	}
 }

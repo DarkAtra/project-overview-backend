@@ -1,6 +1,7 @@
 package de.darkatra.projectoverview.context
 
 import de.darkatra.projectoverview.api.annotation.Check
+import de.darkatra.projectoverview.api.check.CheckOutcome
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import de.darkatra.projectoverview.api.annotation.Plugin as PluginAnnotation
@@ -14,9 +15,11 @@ class InvokablePluginTarget(
 	private val methodsWithCheckAnnotation: List<Method>
 
 	init {
+		// TODO: perform these checks when the plugin is loaded
 		methodsWithCheckAnnotation = target::class.java.methods
 			.filter { method -> method.modifiers and Modifier.PUBLIC != 0 }
 			.filter { method -> method.isAnnotationPresent(Check::class.java) }
+			.filter { method -> method.hasValidReturnType() }
 		// TODO: add further signature validations
 	}
 
@@ -34,4 +37,12 @@ class InvokablePluginTarget(
 
 		return checkMethod.invoke(target, *arguments.toTypedArray())
 	}
+}
+
+private fun Method.hasValidReturnType(): Boolean {
+
+	val returnType = this.returnType
+
+	return Void::class.javaPrimitiveType!!.isAssignableFrom(returnType)
+		|| CheckOutcome::class.java.isAssignableFrom(returnType)
 }
