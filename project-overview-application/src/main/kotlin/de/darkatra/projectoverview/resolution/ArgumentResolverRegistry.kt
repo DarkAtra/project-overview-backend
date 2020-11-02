@@ -1,5 +1,6 @@
-package de.darkatra.projectoverview.context
+package de.darkatra.projectoverview.resolution
 
+import de.darkatra.projectoverview.context.PluginAwareCheckContext
 import org.springframework.core.ResolvableType
 import org.springframework.core.annotation.AnnotationAwareOrderComparator
 import org.springframework.stereotype.Component
@@ -7,7 +8,7 @@ import java.lang.reflect.Parameter
 
 @Component
 class ArgumentResolverRegistry(
-	argumentResolvers: List<ArgumentResolver<*>>
+	argumentResolvers: Collection<ArgumentResolver<*>>
 ) {
 
 	private val typeToArgumentResolversMap = argumentResolvers.groupBy { argumentResolver ->
@@ -17,7 +18,7 @@ class ArgumentResolverRegistry(
 			)
 	}
 
-	fun resolve(parameter: Parameter, checkContext: CheckContext): Any? {
+	fun resolve(parameter: Parameter, checkContext: PluginAwareCheckContext): Any? {
 
 		val parameterResolver = getArgumentResolverForParameter(parameter)
 			?: error("Found no ArgumentResolver for Parameter '${parameter.name}'.")

@@ -1,12 +1,11 @@
 package de.darkatra.projectoverview.context
 
 import org.springframework.context.support.AbstractApplicationContext
-import java.util.Properties
 
 data class Plugin(
 	val applicationContext: AbstractApplicationContext,
-	val properties: Properties,
 	val packageName: String,
+	val bean: Any,
 	val name: String,
 	val author: String
 )

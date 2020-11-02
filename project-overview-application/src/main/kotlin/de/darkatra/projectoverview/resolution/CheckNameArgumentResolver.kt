@@ -1,6 +1,7 @@
-package de.darkatra.projectoverview.context
+package de.darkatra.projectoverview.resolution
 
 import de.darkatra.projectoverview.api.annotation.CheckName
+import de.darkatra.projectoverview.context.CheckContext
 import org.springframework.stereotype.Component
 import java.lang.reflect.Parameter
 
@@ -8,6 +9,6 @@ import java.lang.reflect.Parameter
 class CheckNameArgumentResolver : ArgumentResolver<CheckName> {
 
 	override fun resolve(parameter: Parameter, checkContext: CheckContext): String {
-		return checkContext.checkName
+		return checkContext.getCheckName()
 	}
 }

@@ -1,11 +1,13 @@
 package de.darkatra.projectoverview.context
 
 import de.darkatra.projectoverview.api.LoggingAware
+import de.darkatra.projectoverview.resolution.ArgumentResolverRegistry
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
+import org.springframework.core.env.MapPropertySource
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
 import java.net.URL
@@ -16,7 +18,8 @@ import de.darkatra.projectoverview.api.annotation.Plugin as PluginAnnotation
 @Component
 class PluginManager(
 	private val applicationContext: ApplicationContext,
-	private val argumentResolverRegistry: ArgumentResolverRegistry
+	private val argumentResolverRegistry: ArgumentResolverRegistry,
+	private val pluginProperties: PluginProperties
 ) : LoggingAware(), DisposableBean {
 
 	private val plugins: MutableList<Plugin> = mutableListOf()
@@ -25,14 +28,11 @@ class PluginManager(
 		plugins.toList().forEach { plugin -> unload(plugin) }
 	}
 
-	fun getInvokablePluginTarget(pluginName: String): InvokablePluginTarget? {
-		return plugins.find { plugin -> plugin.name == pluginName }
-			?.let { plugin ->
-				InvokablePluginTarget(
-					plugin = plugin,
-					argumentResolverRegistry = argumentResolverRegistry
-				)
-			}
+	fun createInvokablePluginTarget(plugin: Plugin): InvokablePluginTarget {
+		return InvokablePluginTarget(
+			plugin = plugin,
+			argumentResolverRegistry = argumentResolverRegistry
+		)
 	}
 
 	fun load(pluginUrl: URL): Plugin {
@@ -53,7 +53,6 @@ class PluginManager(
 		// create plugin application context
 		val pluginContext = AnnotationConfigApplicationContext()
 		pluginContext.classLoader = pluginClassLoader
-		pluginContext.parent = applicationContext
 
 		// scan beans
 		val scanner = ClassPathBeanDefinitionScanner(pluginContext, true)
@@ -61,7 +60,8 @@ class PluginManager(
 		scanner.scan(pluginPackageName)
 
 		// ensure exactly one plugin definition exists
-		val pluginBeanDefinitions = scanner.registry.beanDefinitionNames.map { scanner.registry.getBeanDefinition(it) }
+		val pluginBeanDefinitions = scanner.registry.beanDefinitionNames
+			.map(scanner.registry::getBeanDefinition)
 			.filterIsInstance(AnnotatedBeanDefinition::class.java)
 			.filter { it.metadata.hasAnnotation(PluginAnnotation::class.java.name) }
 		when {
@@ -79,14 +79,17 @@ class PluginManager(
 
 		pluginContext.displayName = "'$pluginName' by '$pluginAuthor' - ${pluginBeanDefinition.beanClassName}"
 
+		// inherit plugin specific configuration properties from the parent context
+		pluginContext.environment.propertySources.addFirst(getPluginPropertySource(pluginName))
+
 		log.info("Loading plugin '$pluginName' maintained by '$pluginAuthor' from url: '${pluginUrl.toExternalForm()}'")
 		pluginContext.refresh()
 		log.info("Plugin '$pluginName' was loaded successfully.")
 
 		return Plugin(
 			applicationContext = pluginContext,
-			properties = pluginProperties,
 			packageName = pluginPackageName,
+			bean = pluginContext.getBeansWithAnnotation(PluginAnnotation::class.java).values.first(),
 			name = pluginName,
 			author = pluginAuthor
 		).also { plugins.add(it) }
@@ -100,5 +103,9 @@ class PluginManager(
 		plugins.remove(plugin)
 
 		log.info("Plugin '${plugin.name}' was unloaded successfully.")
+	}
+
+	private fun getPluginPropertySource(pluginName: String): MapPropertySource {
+		return MapPropertySource("plugin-properties", pluginProperties.plugins.getOrDefault(pluginName, emptyMap()))
 	}
 }

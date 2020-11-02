@@ -29,6 +29,8 @@ projectoverview:
     allowed-origins: ~
   repository:
     dir: ./repositories
+
+plugins:
   maven:
     temp-dir: ./maven-temp
     executable: ~
