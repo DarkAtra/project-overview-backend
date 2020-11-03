@@ -2,9 +2,11 @@ package de.darkatra.projectoverview.context
 
 import de.darkatra.projectoverview.api.annotation.Check
 import de.darkatra.projectoverview.api.check.CheckOutcome
+import de.darkatra.projectoverview.api.check.CheckResult
 import de.darkatra.projectoverview.resolution.ArgumentResolverRegistry
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.time.Instant
 
 class InvokablePluginTarget(
 	private val plugin: Plugin,
@@ -18,7 +20,7 @@ class InvokablePluginTarget(
 		.filter { method -> method.hasValidReturnType() }
 	// TODO: add further signature validations
 
-	fun performCheck(checkType: String, checkContext: CheckContext): Any? {
+	fun performCheck(checkType: String, checkContext: CheckContext): CheckResult {
 
 		val methodsForCheckType = methodsWithCheckAnnotation.filter { method -> method.getAnnotation(Check::class.java).type == checkType }
 
@@ -37,12 +39,25 @@ class InvokablePluginTarget(
 			))
 		}
 
-		return checkMethod.invoke(plugin.bean, *arguments.toTypedArray())
+		return getCheckResult(checkMethod.invoke(plugin.bean, *arguments.toTypedArray()))
+	}
+
+	private fun getCheckResult(invocationResult: Any): CheckResult {
+
+		return when (invocationResult) {
+			is CheckOutcome -> CheckResult(
+				checkOutcome = invocationResult,
+				message = "Check succeeded",
+				checked = Instant.now()
+			)
+			is CheckResult -> invocationResult
+			else -> throw IllegalStateException("Check invocation returned with an invalid type")
+		}
 	}
 }
 
 private fun Method.hasValidReturnType(): Boolean {
 	val returnType = this.returnType
-	return Void.TYPE.isAssignableFrom(returnType)
-		|| CheckOutcome::class.java.isAssignableFrom(returnType)
+	return CheckOutcome::class.java.isAssignableFrom(returnType)
+		|| CheckResult::class.java.isAssignableFrom(returnType)
 }

@@ -28,6 +28,11 @@ class PluginManager(
 		plugins.toList().forEach { plugin -> unload(plugin) }
 	}
 
+	fun getPlugin(pluginName: String): Plugin {
+		return plugins.firstOrNull { plugin -> plugin.name == pluginName }
+			?: throw PluginNotFoundException("Could not find a plugin for name '$pluginName'.")
+	}
+
 	fun createInvokablePluginTarget(plugin: Plugin): InvokablePluginTarget {
 		return InvokablePluginTarget(
 			plugin = plugin,
@@ -81,6 +86,9 @@ class PluginManager(
 
 		// inherit plugin specific configuration properties from the parent context
 		pluginContext.environment.propertySources.addFirst(getPluginPropertySource(pluginName))
+
+		// TODO: register PluginConfiguration bean
+//		pluginContext.registerBean()
 
 		log.info("Loading plugin '$pluginName' maintained by '$pluginAuthor' from url: '${pluginUrl.toExternalForm()}'")
 		pluginContext.refresh()
