@@ -18,7 +18,7 @@
 
 	<properties>
 		<start-class>de.darkatra.projectoverview.ProjectOverviewApplication</start-class>
-		<kotlin.version>1.4.10</kotlin.version>
+		<kotlin.version>1.4.20</kotlin.version>
 		<spring-cloud.version>Hoxton.SR9</spring-cloud.version>
 	</properties>
 
