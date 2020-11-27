@@ -76,7 +76,7 @@ class PluginManager(
 
 		// read plugin metadata
 		val pluginBeanDefinition = pluginBeanDefinitions.first()
-		val annotationAttributes = pluginBeanDefinition.metadata.getAnnotationAttributes(PluginAnnotation::class.java.name)
+		val annotationAttributes = pluginBeanDefinition.metadata.getAnnotationAttributes(PluginAnnotation::class.java.canonicalName)
 			?: throw  IllegalStateException("No annotation metadata found for class '${pluginBeanDefinition.beanClassName}' in '${pluginUrl.toExternalForm()}'.")
 
 		val pluginName = annotationAttributes["name"].toString()
