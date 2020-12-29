@@ -18,7 +18,7 @@
 
 	<properties>
 		<start-class>de.darkatra.projectoverview.ProjectOverviewApplication</start-class>
-		<kotlin.version>1.4.21</kotlin.version>
+		<kotlin.version>1.4.21-2</kotlin.version>
 		<spring-cloud.version>2020.0.0</spring-cloud.version>
 	</properties>
 
